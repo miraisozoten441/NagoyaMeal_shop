@@ -13,17 +13,17 @@ struct DetailPageView: View {
     @StateObject private var rvm = ReviewViewModel()
     
     let shop: Shops
+    let currentUser: String
     
     @State private var isReport: Bool = false
     @State var inputText: String = ""
     
     @State private var isUserReview: Bool = false
     @State private var isUpdate = false
-    @State private var oldText = ""
     
     var body: some View {
         ZStack {
-            
+
             Color.baseBg
                 .ignoresSafeArea()
             
@@ -32,22 +32,20 @@ struct DetailPageView: View {
                     dismiss()
                 }
                 ScrollView(showsIndicators: false){
-                    DetailTitle(genre: "ひつまぶし", shopName: shop.shop_name, review: shop.shop_review, distance: 100, status: shop.shop_now_open, openingTimes: "10時~19時", address: shop.shop_address)
+                    DetailTitle(genre: "ひつまぶし", shopName: shop.shop_name, review: shop.shop_review, status: shop.shop_now_open, openingTimes: "10時~19時", address: shop.shop_address)
                     
                     Divider()
                     
                     //自分の口コミ
-                    if inputText.isEmpty{
-                        Button("評価を入力"){
-                            oldText = inputText
-                            isUpdate = !inputText.isEmpty
-                            isUserReview.toggle()
-                            
-                        }
+                    if let myReview = rvm.myReview {
+                        WordOfMouth(review: myReview, isCurrentUser: true)
                     } else {
-                        WordOfMouth(review: Reviews.MOCK_REVIEWS[0], isCurrentUser: true)
-                        
+                        Button("評価を入力"){
+                            isUserReview.toggle()
+                        }
                     }
+                    
+                
                     Divider()
                     
                     
@@ -65,7 +63,7 @@ struct DetailPageView: View {
                 ReportView()
             }
             .sheet(isPresented: $isUserReview){
-                CreateReviewPage(userName: "ここ修正必要", isUpdate: isUpdate, inputText: $inputText, oldText: oldText)
+                CreateReviewPage(currentUser: currentUser, shop: shop, isUpdate: isUpdate, rvm: rvm)
                     .interactiveDismissDisabled()
                     .presentationDetents([
                         .fraction(1),
@@ -75,7 +73,7 @@ struct DetailPageView: View {
             }
         }
         .onAppear{
-            Task { await rvm.fetchReviews(shopId: shop.id)}
+            Task { await rvm.fetchReviews(shopId: shop.id, currentUser: currentUser)}
         }
         
         
@@ -100,8 +98,11 @@ struct DetailPageView: View {
                     
                     if isCurrentUser{
                         Button{
-                            oldText = inputText
-                            isUpdate = !inputText.isEmpty
+                            if let _ = rvm.myReview {
+                                rvm.inputText = review.review_body
+                                rvm.raiting = review.review_point
+                                isUpdate = true
+                            }
                             isUserReview.toggle()
                         } label: {
                             Image(systemName: "ellipsis")
@@ -150,5 +151,5 @@ struct DetailPageView: View {
 }
 
 #Preview {
-    DetailPageView(shop: Shops.MOCK_SHOP[0])
+    DetailPageView(shop: Shops.MOCK_SHOP[0], currentUser: "test_token1")
 }

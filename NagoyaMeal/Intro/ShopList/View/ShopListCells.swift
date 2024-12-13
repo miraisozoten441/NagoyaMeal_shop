@@ -18,7 +18,7 @@ struct ShopListCells: View {
             ScrollView{
                 ForEach(svm.shops){ shop in
                     
-                    NavigationLink(destination: DetailPageView(shop: shop)){
+                    NavigationLink(destination: DetailPageView(shop: shop, currentUser: currentUser)){
                         
                         ShopListCell(genre: "ひつまぶし", distance: 200, openingTimes: "24時間", shop: shop, svm: svm, currentUser: currentUser)
                             .foregroundStyle(Color(.label))

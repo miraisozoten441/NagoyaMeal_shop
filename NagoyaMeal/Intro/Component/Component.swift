@@ -386,7 +386,7 @@ struct DetailTitle: View {
     
     let shopName: String
     let review: Float
-    let distance: Int
+//    let distance: Int
     let status: Bool
     let openingTimes: String
     let address: String
@@ -430,10 +430,11 @@ struct DetailTitle: View {
                     HStack{
                         Text(String(format: "%.1f", review))
                         StarRating(rating: review)
-                        Text("・")
-                        //距離
-                        Text("\(distance)m")
                         Spacer()
+//                        Text("・")
+                        //距離
+//                        Text("\(distance)m")
+//                        Spacer()
                         
                     }
                     

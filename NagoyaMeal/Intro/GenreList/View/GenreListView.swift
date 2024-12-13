@@ -13,6 +13,8 @@ struct GenreListView: View {
     
     @State var genreId = ""
     
+    @State var currentUser = "test_token1"
+    
     var body: some View {
         NavigationStack {
             ZStack{
@@ -33,7 +35,7 @@ struct GenreListView: View {
                     LazyVGrid(columns: Array(repeating: GridItem(), count: 3), content: {
                         ForEach(gvm.genres){ list in
                             
-                            NavigationLink(destination: ShopView(genreId: list.id, currentUser: "00779ab7e49b4fcebe61aed9a4827b92", genreLists: gvm.genres)){
+                            NavigationLink(destination: ShopView(genreId: list.id, currentUser: currentUser, genreLists: gvm.genres)){
                                 GenreListCell(color: .accent, h: 100, GenerName: list.genre_name)
                                 
                             }

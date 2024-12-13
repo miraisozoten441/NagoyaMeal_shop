@@ -7,16 +7,13 @@
 
 import SwiftUI
 
-/// test
 struct CreateReviewPage: View {
     
-    let userName: String
+    let currentUser: String
+    let shop: Shops
     let isUpdate: Bool
     
-    @State private var rating = 0
-    
-    @Binding var inputText: String
-    let oldText: String
+    @ObservedObject var rvm: ReviewViewModel
     
     @Environment(\.dismiss) var dismiss
     
@@ -25,7 +22,8 @@ struct CreateReviewPage: View {
         VStack{
             HStack{
                 Button{
-                    inputText = oldText
+                    rvm.inputText = ""
+                    rvm.raiting = 0
                     dismiss()
                 } label: {
                     Text("キャンセル")
@@ -33,50 +31,90 @@ struct CreateReviewPage: View {
                 }
                 
                 Spacer()
+                
+                if isUpdate{
+                    Button{
+                        if let myReview = rvm.myReview {
+                            rvm.myReview = nil
+                            Task{
+                                do{
+                                    try await rvm.deleteReview(id: myReview.id) {data in
+                                        await MainActor.run {
+                                            print("削除")
+                                            
+                                        }
+                                        await rvm.fetchReviews(shopId: shop.id, currentUser: currentUser)
+                                        await MainActor.run {
+                                            rvm.inputText = ""
+                                            rvm.raiting = 0
+                                            
+                                        }
+                                    }
+                                } catch {
+                                    print("Delete error: \(error)")
+                                }
+                                dismiss()
+                            }
+                        }
+                        
+                    } label: {
+                        Text("削除")
+                            .font(.title3)
+                    }
+                }
             }
             .padding(.bottom)
             Spacer()
             
             
-            //ユーザーname
-            HStack{
-                Image(systemName: "person.circle.fill")
-                    .resizable()
-                    .frame(width: 40, height: 40)
-                    .clipShape(Circle())
-                    .foregroundStyle(Color(.systemGray4))
-                
-                Text(userName)
-                    .font(.subheadline)
-                
-                
-                Spacer()
-                
-            }
-            
             //星部分
             HStack{
-                CreateRatingView(rating: $rating)
+                CreateRatingView(rating: $rvm.raiting)
             }
             .padding()
             
             
             HStack{
-                TextEditor(text: $inputText)
-                    //.frame(width: .infinity, height: 300)
+                TextEditor(text: $rvm.inputText)
+                //.frame(width: .infinity, height: 300)
                     .lineLimit(5)
                     .border(.gray)
-                    .onChange(of: inputText) { oldValue, newValue in
+                    .onChange(of: rvm.inputText) { oldValue, newValue in
                         if newValue.count > 255 {
-                            inputText = oldValue
+                            rvm.inputText = oldValue
                         }
                     }
-                    
+                
             }
             
             VStack{
                 Button{
-                    print("送信")
+                    if isUpdate {
+                        Task {
+                            if let myReview = rvm.myReview {
+                                try await rvm.updateReview(id: myReview.id) {data in
+                                    await MainActor.run {
+                                        print("更新")
+                                    }
+                                }
+                                await rvm.fetchReviews(shopId: shop.id, currentUser: currentUser)
+                                rvm.inputText = ""
+                                rvm.raiting = 0
+                            }
+                        }
+                    } else {
+                        Task {
+                            try await rvm.createReview(shopId: shop.id, userId: currentUser) {data in
+                                await MainActor.run {
+                                    print("送信")
+                                }
+                                
+                            }
+                            await rvm.fetchReviews(shopId: shop.id, currentUser: currentUser)
+                            rvm.inputText = ""
+                            rvm.raiting = 0
+                        }
+                    }
                     dismiss()
                 }label: {
                     Text(isUpdate ? "更新" :"送信")
@@ -84,14 +122,14 @@ struct CreateReviewPage: View {
                         .padding(10)
                         .frame(maxWidth: 150)
                         .foregroundColor(.white)
-                        .background(inputText.isEmpty ? .gray: .accent)
+                        .background(rvm.inputText.isEmpty ? .gray: .accent)
                         .cornerRadius(30)
-                }.disabled(inputText.isEmpty)
-
+                }.disabled(rvm.inputText.isEmpty)
+                
                 
             }
             .padding()
-
+            
             Spacer()
             
         }
@@ -101,5 +139,5 @@ struct CreateReviewPage: View {
 }
 
 #Preview {
-//    DetailPageView(shop: <#Shops#>)
+    //    DetailPageView(shop: <#Shops#>)
 }
