@@ -45,6 +45,7 @@ class APIConnect {
         }
     }
     
+    // test
     func testConnection() async throws -> Bool {
         let data = try await getRequest()
         let json = try JSONDecoder().decode([String: String].self, from: data)
