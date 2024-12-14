@@ -96,12 +96,20 @@ struct ShopListCells: View {
                     .onAppear{
                         if let selectGenreId = gvm.getGenreId(){
                             Task{
-                                await svm.fetchShops(genreId: selectGenreId)
+                                let sortKey = svm.getSortKey(from: svm.selectSort)
+                                
+                                await svm.fetchShops(genreId: selectGenreId, sortKey: sortKey)
                                 await svm.fetchFavorites(userId: currentUser)
+                                
+                                svm.convertToFavoriteShops()
+                                
                                 await svm.fetchFavoritesShops()
+                                
+                                
+                                
                             }
                         }
-                        
+
                     }
                     .padding(.vertical, 8)
                 }

@@ -19,11 +19,10 @@ struct ShopView: View {
     @State var isGenre = false
     @State var isSort = false
     @State var isOpen = false
-    @State var selectSort: String = "人気順"
     
     @ObservedObject var gvm: GenreViewModel
     
-    @State private var sortLists: [String] = ["口コミ順","人気順","評価順","お値段順","お店名順"]
+    @State private var sortLists: [String] = ["登録順","口コミ順","人気順","評価順","お店名順"]
     
     var body: some View {
         ZStack{
@@ -39,7 +38,7 @@ struct ShopView: View {
                 VStack {
                     ShopListHeader().padding(.horizontal)
                     
-                    ShopFilterItem(isGenre: $isGenre, isSort: $isSort, isOpen: $isOpen, selectSort: $selectSort, gvm: gvm).padding(.bottom)
+                    ShopFilterItem(isGenre: $isGenre, isSort: $isSort, isOpen: $isOpen, gvm: gvm, svm: svm).padding(.bottom)
                 }.padding(.top)
                     .overlay(Rectangle().frame(height: 1).foregroundStyle(.gray), alignment: .bottom)
                 
@@ -78,11 +77,20 @@ struct ShopView: View {
         .sheet(isPresented: $isGenre, onDismiss: {
             if let selectGenreId = gvm.getGenreId(){
                 Task{
-                    await svm.fetchShops(genreId: selectGenreId)
-                    await svm.fetchFavoritesShops()
+                    let sortKey = svm.getSortKey(from: svm.selectSort)
+                    
+                    await svm.fetchShops(genreId: selectGenreId, sortKey: sortKey)
+                    await svm.fetchFavorites(userId: currentUser)
+                    
                     svm.convertToFavoriteShops()
+                    
+                    await svm.fetchFavoritesShops()
+                    
+                    
+                    
                 }
             }
+
         }){
             
             GenrePicker(genreLists: gvm.genres, gvm: gvm)
@@ -91,9 +99,25 @@ struct ShopView: View {
                 ])
             
         }
-        .sheet(isPresented: $isSort){
-            
-            SortPicker(sortLists: sortLists, sort: $selectSort)
+        .sheet(isPresented: $isSort, onDismiss: {
+            if let selectGenreId = gvm.getGenreId(){
+                Task{
+                    let sortKey = svm.getSortKey(from: svm.selectSort)
+                    
+                    await svm.fetchShops(genreId: selectGenreId, sortKey: sortKey)
+                    await svm.fetchFavorites(userId: currentUser)
+                    
+                    svm.convertToFavoriteShops()
+                    
+                    await svm.fetchFavoritesShops()
+                    
+                    
+                    
+                }
+            }
+
+        }){
+            SortPicker(sortLists: sortLists, sort: $svm.selectSort)
                 .presentationDetents([
                     .fraction(0.4)
                 ])
@@ -102,11 +126,16 @@ struct ShopView: View {
         .onAppear{
             if let selectGenreId = gvm.getGenreId(){
                 Task{
-                    await svm.fetchShops(genreId: selectGenreId)
+                    let sortKey = svm.getSortKey(from: svm.selectSort)
+                    
+                    await svm.fetchShops(genreId: selectGenreId, sortKey: sortKey)
                     await svm.fetchFavorites(userId: currentUser)
-                    await svm.fetchFavoritesShops()
                     
                     svm.convertToFavoriteShops()
+                    
+                    await svm.fetchFavoritesShops()
+                    
+                    
                     
                 }
             }
@@ -153,6 +182,9 @@ struct ShopView: View {
         .background(.accent.opacity(0.4), in: .capsule)
         .padding(.horizontal, 5)
     }
+    
+    
+    
 }
 
 #Preview {

@@ -12,6 +12,7 @@ class ShopViewModel: ObservableObject {
     @Published var favoritesShops: [FavoriteShops] = []
     @Published var fs: [FavoriteShop] = []
     @Published var favorites: [Favorites] = []
+    @Published var selectSort: String = "登録順"
     
     
     
@@ -38,13 +39,13 @@ class ShopViewModel: ObservableObject {
     
     
     ///お店取得
-    func fetchShops(genreId: String = "") async {
-        let urlString: String
-        if genreId.isEmpty {
-            urlString = "\(CommonUrl.url)api/shop/shop/shops/shops"
-        } else {
-            urlString = "\(CommonUrl.url)api/shop/shop/shops/shops/\(genreId)"
+    func fetchShops(genreId: String = "", sortKey: String = "dafault") async {
+        var urlString = "\(CommonUrl.url)api/shop/shop/shops/shops"
+        if !genreId.isEmpty {
+            urlString += "/\(genreId)"
         }
+        
+        urlString += "?sort_key=\(sortKey)"
         
         guard let url = URL(string: urlString) else {
             print("Invalid URL")
@@ -147,6 +148,23 @@ class ShopViewModel: ObservableObject {
                 shop_phoneNumber: shop.shop_phoneNumber,
                 isFavorite:  false
             )
+        }
+    }
+    
+    
+    /// ソートキーを選択されたリストから取得
+    func getSortKey(from sortName: String) -> String {
+        switch sortName {
+        case "口コミ順":
+            return "comments"
+        case "人気順":
+            return "favorites"
+        case "評価順":
+            return "review"
+        case "お店名順":
+            return "name"
+        default:
+            return "default"
         }
     }
     

@@ -12,9 +12,10 @@ struct ShopFilterItem: View {
     @Binding var isGenre: Bool
     @Binding var isSort: Bool
     @Binding var isOpen: Bool
-    @Binding var selectSort: String
     
     @ObservedObject var gvm: GenreViewModel
+    @ObservedObject var svm: ShopViewModel
+    
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false){
@@ -42,7 +43,7 @@ struct ShopFilterItem: View {
                 
                 
                 HStack{
-                    Text(selectSort)
+                    Text(svm.selectSort)
                     Image(systemName: "arrowtriangle.down.fill")
                         .font(.caption)
                 }
