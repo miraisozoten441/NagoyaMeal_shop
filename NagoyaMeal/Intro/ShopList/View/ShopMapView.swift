@@ -10,8 +10,12 @@ import MapKit
 
 struct ShopMapView: View {
     
-    let shopList: [Shops]
-    @State private var isSheet = false
+    @ObservedObject var gvm: GenreViewModel
+    @ObservedObject var svm: ShopViewModel
+    let currentUser: String
+    @Binding var isSheet: Bool
+    
+    
     
     var body: some View {
         VStack {
@@ -34,7 +38,7 @@ struct ShopMapView: View {
         }.sheet(isPresented: $isSheet){
             VStack{
                 Text("")
-                ShopMapCells(shopList: shopList)
+                ShopMapCells(gvm: gvm, svm: svm, currentUser: currentUser, isSheet: $isSheet)
                 
             }
             .presentationDetents([
@@ -47,5 +51,5 @@ struct ShopMapView: View {
 }
 
 #Preview {
-    ShopMapView(shopList: Shops.MOCK_SHOP)
+    //ShopMapView(gvm: GenreViewModel(), svm: ShopViewModel(), currentUser: "test2")
 }

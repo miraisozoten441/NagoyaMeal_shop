@@ -8,32 +8,151 @@
 import SwiftUI
 
 struct ShopMapCells: View {
-    let shopList: [Shops]
+    @ObservedObject var gvm: GenreViewModel
+    @ObservedObject var svm: ShopViewModel
+    let genre: String = "ひつまぶし"
+    let currentUser: String
+    let openingTimes: String = "24時間"
     
-    @State private var isShopSheet: Bool = false
+    @State private var isShopSheet = false
+    @State var selectShop: FavoriteShops?
+    
+    @Binding var isSheet: Bool
     
     var body: some View {
         ScrollView{
-            ForEach(shopList){ shop in
+            ForEach(svm.favoritesShops){ shop in
                 
-                MapSheetCell(genre: "ひつまぶし", shopName: shop.shop_name, review: shop.shop_review, distance: 300, status: shop.shop_now_open, openingTimes: "24時間")
-                    
-                    .onTapGesture {
-                        isShopSheet.toggle()
+                
+                VStack{
+                    HStack{
+                        Text(genre)
+                            .frame(width: 100)
+                            .foregroundStyle(.white)
+                            .background(.mainBg)
+                        
+                        Spacer()
                     }
+                    
+                    //お店の名前
+                    HStack{
+                        Text(shop.shop_name)
+                        
+                            .lineLimit(1)
+                        
+                        Spacer()
+                        
+                        if shop.isFavorite {
+                            Button {
+                                delete(shop: shop)
+                            } label: {
+                                Image(systemName: "heart.fill")
+                                    .font(.title)
+                                    .foregroundStyle(.pink)
+                            }
+                            .padding(.horizontal)
+                        } else {
+                            Button{
+                                Task {
+                                    try await svm.createFavorites(shopId: shop.id, userId: currentUser) {data in
+                                        await MainActor.run {
+                                            
+                                        }
+                                    }
+                                    await svm.fetchFavorites(userId: currentUser)
+                                    await svm.fetchFavoritesShops()
+                                }
+                            } label: {
+                                Image(systemName: "heart")
+                                    .font(.title)
+                                    .foregroundStyle(.primary)
+                            }
+                            .padding(.horizontal)
+                        }
+                        
+                        
+                    }
+                    .font(.title3)
+                    //評価 & 距離
+                    HStack{
+                        Text(String(format: "%.1f", shop.shop_review))
+                        StarRating(rating: shop.shop_review)
+                        Spacer()
+                        
+                    }
+                    
+                    //営業状態
+                    HStack{
+                        Text(shop.shop_now_open ? "営業中": "休業中")
+                            .lineLimit(1)
+                        Text(openingTimes)
+                        Spacer()
+                    }
+                    
+                }
+                .padding(.leading)
+                .foregroundStyle(Color(.label))
+                .onTapGesture {
+                    selectShop = shop
+                    isSheet = false
+                    isShopSheet = true
+                }
+                .onAppear{
+                    if let selectGenreId = gvm.getGenreId(){
+                        Task{
+                            let sortKey = svm.getSortKey(from: svm.selectSort)
+                            
+                            await svm.fetchShops(genreId: selectGenreId, sortKey: sortKey)
+                            await svm.fetchFavorites(userId: currentUser)
+                            
+                            svm.convertToFavoriteShops()
+                            
+                            await svm.fetchFavoritesShops()
+                            
+                            
+                            
+                        }
+                    }
+                    
+                }
+                .padding(.vertical, 8)
+                
+                
                 
                 
                 Rectangle()
-                    .frame(height: 6)
-                    .foregroundColor(.gray)
+                    .frame(height: 1)
+                    .foregroundStyle(.gray)
             }
         }
         .fullScreenCover(isPresented: $isShopSheet) {
-//            DetailPageView(shop: Shops)
+            if let shop = selectShop {
+                DetailPageView(svm: svm, shop: shop, currentUser: currentUser)
+            }
+            
+        }
+    }
+    
+    
+    func delete(shop: FavoriteShops){
+        Task {
+            if let df = svm.fs.first(where: { $0.shopId == shop.id }) {
+                try await svm.deleteFavorites(favoriteId: df.favoriteId) { data in
+                    await MainActor.run {
+                        print("削除が完了")
+                    }
+                }
+                svm.fs = []
+                await svm.fetchFavorites(userId: currentUser)
+                await svm.fetchFavoritesShops()
+                
+            } else {
+                print("一致するFavoriteShopが見つかりませんでした")
+            }
         }
     }
 }
 
-#Preview {
-    ShopMapCells(shopList: Shops.MOCK_SHOP)
-}
+//#Preview {
+//    ShopMapCells(gvm: GenreViewModel(), svm: ShopViewModel(), currentUser: "test2", isSheet: )
+//}

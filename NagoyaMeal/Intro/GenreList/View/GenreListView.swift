@@ -34,7 +34,7 @@ struct GenreListView: View {
                     //
                     //                    })
                     LazyVGrid(columns: Array(repeating: GridItem(), count: 3), content: {
-                        ForEach(gvm.genres){ list in
+                        ForEach(gvm.genres.filter { $0.id != "0" }){ list in
                             
                             NavigationLink(destination: ShopView(currentUser: currentUser, gvm: gvm)){
                                 GenreListCell(color: .accent, h: 100, GenerName: list.genre_name)

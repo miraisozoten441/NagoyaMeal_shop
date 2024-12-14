@@ -16,6 +16,8 @@ struct ShopFilterItem: View {
     @ObservedObject var gvm: GenreViewModel
     @ObservedObject var svm: ShopViewModel
     
+    @Binding var isSheet: Bool
+    
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false){
@@ -39,6 +41,7 @@ struct ShopFilterItem: View {
                 )
                 .onTapGesture {
                     isGenre = true
+                    isSheet = false
                 }
                 
                 
@@ -55,6 +58,7 @@ struct ShopFilterItem: View {
                 )
                 .onTapGesture {
                     isSort = true
+                    isSheet = false
                 }
                 
                 if !isOpen{

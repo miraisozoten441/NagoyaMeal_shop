@@ -19,6 +19,7 @@ struct ShopView: View {
     @State var isGenre = false
     @State var isSort = false
     @State var isOpen = false
+    @State var isSheet = false
     
     @ObservedObject var gvm: GenreViewModel
     
@@ -38,7 +39,7 @@ struct ShopView: View {
                 VStack {
                     ShopListHeader().padding(.horizontal)
                     
-                    ShopFilterItem(isGenre: $isGenre, isSort: $isSort, isOpen: $isOpen, gvm: gvm, svm: svm).padding(.bottom)
+                    ShopFilterItem(isGenre: $isGenre, isSort: $isSort, isOpen: $isOpen, gvm: gvm, svm: svm, isSheet: $isSheet).padding(.bottom)
                 }.padding(.top)
                     .overlay(Rectangle().frame(height: 1).foregroundStyle(.gray), alignment: .bottom)
                 
@@ -52,7 +53,7 @@ struct ShopView: View {
                             ShopListCells(gvm: gvm, svm: svm, currentUser: currentUser)
                                 .id(Tab.lists)
                                 .containerRelativeFrame(.horizontal)
-                            ShopMapView(shopList: svm.shops)
+                            ShopMapView(gvm: gvm, svm: svm, currentUser: currentUser, isSheet: $isSheet)
                                 .id(Tab.maps)
                                 .containerRelativeFrame(.horizontal)
                         }

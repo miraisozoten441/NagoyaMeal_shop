@@ -41,7 +41,7 @@ class ShopViewModel: ObservableObject {
     ///お店取得
     func fetchShops(genreId: String = "", sortKey: String = "dafault") async {
         var urlString = "\(CommonUrl.url)api/shop/shop/shops/shops"
-        if !genreId.isEmpty {
+        if !genreId.isEmpty && genreId != "0"  {
             urlString += "/\(genreId)"
         }
         
