@@ -25,7 +25,7 @@ struct NagoyaMealApp: App {
 
     var body: some Scene {
         WindowGroup {
-            GenreListView()
+            GenreListView().environmentObject(EnvironmentsSettings())
 //            MapView()
         }
         .modelContainer(sharedModelContainer)

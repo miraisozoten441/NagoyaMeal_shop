@@ -8,11 +8,10 @@
 import SwiftUI
 
 struct ShopListCells: View {
-    
+    @ObservedObject var gvm: GenreViewModel
     @ObservedObject var svm: ShopViewModel
     let genre: String = "ひつまぶし"
     let currentUser: String
-    let genreId: String
     let openingTimes: String = "24時間"
     
     
@@ -95,10 +94,12 @@ struct ShopListCells: View {
                     
                     .foregroundStyle(Color(.label))
                     .onAppear{
-                        Task{
-                            await svm.fetchShops(genreId: genreId)
-                            await svm.fetchFavorites(userId: currentUser)
-                            await svm.fetchFavoritesShops()
+                        if let selectGenreId = gvm.getGenreId(){
+                            Task{
+                                await svm.fetchShops(genreId: selectGenreId)
+                                await svm.fetchFavorites(userId: currentUser)
+                                await svm.fetchFavoritesShops()
+                            }
                         }
                         
                     }

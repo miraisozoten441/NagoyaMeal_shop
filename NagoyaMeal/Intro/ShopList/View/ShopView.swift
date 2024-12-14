@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct ShopView: View {
-    
-    let genreId: String
     let currentUser: String
     @StateObject private var svm = ShopViewModel()
     //一覧とマップの表示を切り替え
@@ -21,7 +19,6 @@ struct ShopView: View {
     @State var isGenre = false
     @State var isSort = false
     @State var isOpen = false
-    @State var selectGenre: String = ""
     @State var selectSort: String = "人気順"
     
     @ObservedObject var gvm: GenreViewModel
@@ -42,7 +39,7 @@ struct ShopView: View {
                 VStack {
                     ShopListHeader().padding(.horizontal)
                     
-                    ShopFilterItem(isGenre: $isGenre, isSort: $isSort, isOpen: $isOpen, selectGenre: $selectGenre, selectSort: $selectSort).padding(.bottom)
+                    ShopFilterItem(isGenre: $isGenre, isSort: $isSort, isOpen: $isOpen, selectSort: $selectSort, gvm: gvm).padding(.bottom)
                 }.padding(.top)
                     .overlay(Rectangle().frame(height: 1).foregroundStyle(.gray), alignment: .bottom)
                 
@@ -53,7 +50,7 @@ struct ShopView: View {
                     
                     ScrollView(.horizontal){
                         LazyHStack(spacing: 0){
-                            ShopListCells(svm: svm, currentUser: currentUser, genreId: genreId)
+                            ShopListCells(gvm: gvm, svm: svm, currentUser: currentUser)
                                 .id(Tab.lists)
                                 .containerRelativeFrame(.horizontal)
                             ShopMapView(shopList: svm.shops)
@@ -78,9 +75,17 @@ struct ShopView: View {
             
         }
         .navigationBarHidden(true)
-        .sheet(isPresented: $isGenre){
+        .sheet(isPresented: $isGenre, onDismiss: {
+            if let selectGenreId = gvm.getGenreId(){
+                Task{
+                    await svm.fetchShops(genreId: selectGenreId)
+                    await svm.fetchFavoritesShops()
+                    svm.convertToFavoriteShops()
+                }
+            }
+        }){
             
-            GenrePicker(genreLists: gvm.genres, select: $selectGenre)
+            GenrePicker(genreLists: gvm.genres, gvm: gvm)
                 .presentationDetents([
                     .fraction(0.4)
                 ])
@@ -88,23 +93,24 @@ struct ShopView: View {
         }
         .sheet(isPresented: $isSort){
             
-            SortPicker(genreLists: sortLists, select: $selectSort)
+            SortPicker(sortLists: sortLists, sort: $selectSort)
                 .presentationDetents([
                     .fraction(0.4)
                 ])
             
         }
         .onAppear{
-            Task{
-                await svm.fetchShops(genreId: genreId)
-                await svm.fetchFavorites(userId: currentUser)
-                await svm.fetchFavoritesShops()
-               
-                svm.convertToFavoriteShops()
-               
+            if let selectGenreId = gvm.getGenreId(){
+                Task{
+                    await svm.fetchShops(genreId: selectGenreId)
+                    await svm.fetchFavorites(userId: currentUser)
+                    await svm.fetchFavoritesShops()
+                    
+                    svm.convertToFavoriteShops()
+                    
+                }
             }
            
-            selectGenre = gvm.genres.first(where: { $0.id == genreId })?.genre_name ?? ""
         }
         
     }
@@ -150,5 +156,5 @@ struct ShopView: View {
 }
 
 #Preview {
-    ShopView(genreId: "1", currentUser: "00779ab7e49b4fcebe61aed9a4827b92", gvm: GenreViewModel())
+    ShopView(currentUser: "00779ab7e49b4fcebe61aed9a4827b92", gvm: GenreViewModel())
 }

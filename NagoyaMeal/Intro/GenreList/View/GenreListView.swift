@@ -9,6 +9,7 @@ import SwiftUI
 
 struct GenreListView: View {
     
+    @EnvironmentObject var env: EnvironmentsSettings
     @StateObject private var gvm = GenreViewModel()
     
     @State var genreId = ""
@@ -25,20 +26,25 @@ struct GenreListView: View {
                 
                 ScrollView(.vertical, showsIndicators: false){
                     //ここはできたら作成
-//                    LazyVGrid(columns: Array(repeating: GridItem(), count: 1), content: {
-//                        NavigationLink(destination: a()){
-//                            //サイズなどを渡す
-//                            GenreListCell(color: .accent, h: 200, GenerName: "おすすめ")
-//                        }
-//                        
-//                    })
+                    //                    LazyVGrid(columns: Array(repeating: GridItem(), count: 1), content: {
+                    //                        NavigationLink(destination: a()){
+                    //                            //サイズなどを渡す
+                    //                            GenreListCell(color: .accent, h: 200, GenerName: "おすすめ")
+                    //                        }
+                    //
+                    //                    })
                     LazyVGrid(columns: Array(repeating: GridItem(), count: 3), content: {
                         ForEach(gvm.genres){ list in
                             
-                            NavigationLink(destination: ShopView(genreId: list.id, currentUser: currentUser, gvm: gvm)){
+                            NavigationLink(destination: ShopView(currentUser: currentUser, gvm: gvm)){
                                 GenreListCell(color: .accent, h: 100, GenerName: list.genre_name)
                                 
                             }
+                            .simultaneousGesture(
+                                TapGesture().onEnded {
+                                    gvm.selectGenre = list.genre_name
+                                }
+                            )
                         }
                     })
                 }
@@ -62,5 +68,5 @@ struct a: View {
 }
 
 #Preview {
-    GenreListView()
+    GenreListView().environmentObject(EnvironmentsSettings())
 }

@@ -163,23 +163,20 @@ struct GenreListCell: View {
     let GenerName: String
     
     var body: some View {
-        Image("ひつまぶし") // アセットに登録されている画像名
-            .resizable() // サイズ変更可能にする
+        Image("\(GenerName)")
+            .resizable()
             .scaledToFill()
-            .frame(height: h) // 高さを指定
+            .frame(width: h + 20, height: h)
             .cornerRadius(15)
         
             .overlay {
-                Color.gray
+                Color.white
                     .cornerRadius(15)
-                    .opacity(0.3) // フィルターの透明度を調整
-                
-                //                RoundedRectangle(cornerRadius: 15)
-                //                    .stroke(.accent, lineWidth: 2)
+                    .opacity(0.5)
                 VStack(alignment: .center) {
                     Text(GenerName)
-                        .foregroundStyle(.white)
-                        .shadow(color: .accent, radius: 3, x: 0, y: 0)
+                        .foregroundStyle(.black)
+                        .shadow(color: .black.opacity(0.5), radius: 0, x: 1, y: 1)
                 }
             }
     }
@@ -338,10 +335,10 @@ struct DetailTitle: View {
                         Text(String(format: "%.1f", shop.shop_review))
                         StarRating(rating: shop.shop_review)
                         Spacer()
-//                        Text("・")
+                        //                        Text("・")
                         //距離
-//                        Text("\(distance)m")
-//                        Spacer()
+                        //                        Text("\(distance)m")
+                        //                        Spacer()
                         
                     }
                     
@@ -420,8 +417,8 @@ struct DetailTitle: View {
 struct GenrePicker: View {
     
     let genreLists: [Genres]
+    @ObservedObject var gvm: GenreViewModel
     @State private var isExpanded = false
-    @Binding var select: String
     
     var body: some View {
         ZStack{
@@ -429,58 +426,13 @@ struct GenrePicker: View {
             Color.baseBg
                 .ignoresSafeArea()
             
-            VStack{
-                VStack{
-                    if !isExpanded{
-                        HStack(spacing: 10){
-                            Text(select)
-                            
-                            Image(systemName: "chevron.down")
-                                .font(.subheadline)
-                                .foregroundStyle(.gray)
-                                .rotationEffect(.degrees(isExpanded ? -180 : 0))
-                            
-                                .frame(height: 40)
-                            
-                        }
-                        .onTapGesture {
-                            isExpanded.toggle()
-                        }
-                    } else {
-                        /*
-                         ScrollViewReader { proxy in
-                         ScrollView(.vertical) {
-                         VStack(spacing: 10){
-                         ForEach(genreLists) { list in
-                         Text(list)
-                         .foregroundStyle(select == list ? Color.primary : .gray)
-                         .frame(height: 40)
-                         .padding(.horizontal)
-                         .onTapGesture {
-                         self.select = list
-                         isExpanded.toggle()
-                         }
-                         }
-                         }
-                         .onAppear{
-                         if let index = genreLists.firstIndex(of: select){
-                         proxy.scrollTo(genreLists[index], anchor: .center)
-                         }
-                         }
-                         }
-                         .frame(height: 200)
-                         .transition(.move(edge: .bottom))
-                         }
-                         */
-                    }
+            Picker("ジャンル選択", selection: $gvm.selectGenre) {
+                ForEach(genreLists) { genre in
+                    Text(genre.genre_name).tag(genre.genre_name)
                 }
-                
             }
-            .padding(.horizontal)
-            .overlay(
-                RoundedRectangle(cornerRadius: 5)
-                    .stroke(Color.accent, lineWidth: 1)
-            )
+            .pickerStyle(WheelPickerStyle())
+            
             
         }
     }
@@ -488,9 +440,8 @@ struct GenrePicker: View {
 
 struct SortPicker: View {
     
-    let genreLists: [String]
-    @State private var isExpanded = false
-    @Binding var select: String
+    let sortLists: [String]
+    @Binding var sort: String
     
     var body: some View {
         ZStack{
@@ -498,58 +449,13 @@ struct SortPicker: View {
             Color.baseBg
                 .ignoresSafeArea()
             
-            VStack{
-                VStack{
-                    if !isExpanded{
-                        HStack(spacing: 10){
-                            Text(select)
-                            
-                            Image(systemName: "chevron.down")
-                                .font(.subheadline)
-                                .foregroundStyle(.gray)
-                                .rotationEffect(.degrees(isExpanded ? -180 : 0))
-                            
-                                .frame(height: 40)
-                            
-                        }
-                        .onTapGesture {
-                            withAnimation(.snappy){ isExpanded.toggle()}
-                        }
-                    } else {
-                        
-                        ScrollViewReader { proxy in
-                            ScrollView(.vertical) {
-                                VStack(spacing: 10){
-                                    ForEach(genreLists, id:\.self) { list in
-                                        Text(list)
-                                            .foregroundStyle(select == list ? Color.primary : .gray)
-                                            .frame(height: 40)
-                                            .padding(.horizontal)
-                                            .onTapGesture {
-                                                self.select = list
-                                                isExpanded.toggle()
-                                            }
-                                    }
-                                }
-                                .onAppear{
-                                    if let index = genreLists.firstIndex(of: select){
-                                        proxy.scrollTo(genreLists[index], anchor: .center)
-                                    }
-                                }
-                            }
-                            .frame(height: 200)
-                            .transition(.move(edge: .bottom))
-                        }
-                        
-                    }
+            Picker("ソート選択", selection: $sort) {
+                ForEach(sortLists, id: \.self) { list in
+                    Text(list)
                 }
-                
             }
-            .padding(.horizontal)
-            .overlay(
-                RoundedRectangle(cornerRadius: 5)
-                    .stroke(Color.accent, lineWidth: 1)
-            )
+            .pickerStyle(WheelPickerStyle())
+            
             
         }
     }

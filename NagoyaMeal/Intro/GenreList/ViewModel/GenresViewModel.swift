@@ -9,19 +9,20 @@ import SwiftUI
 
 class GenreViewModel: ObservableObject {
     @Published var genres: [Genres] = []
+    @Published var selectGenre: String = ""
     
     init(){
         Task{
             await fetchGenres()
         }
     }
-
+    
     func fetchGenres() async {
         guard let url = URL(string: "\(CommonUrl.url)api/shop/shop/genres/genres") else {
             print("Invalid URL")
             return
         }
-
+        
         let api = APIConnect(url: url)
         do {
             let data = try await api.getRequest()
@@ -33,5 +34,9 @@ class GenreViewModel: ObservableObject {
         } catch {
             print("Error: \(error.localizedDescription)")
         }
+    }
+    
+    func getGenreId() -> String? {
+        return genres.first { $0.genre_name == self.selectGenre }?.id
     }
 }
