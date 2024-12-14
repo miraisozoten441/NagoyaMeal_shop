@@ -15,26 +15,24 @@ class ReviewViewModel: ObservableObject {
     
     
     ///レビュー取得
-    
     func fetchReviews(shopId: String, currentUser: String) async {
-        
-        print("全件取得")
-        guard let url = URL(string: "\(CommonUrl.url)api/shop/shop/reviews/reviews/\(shopId)") else { return }
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if let data = data {
-                do {
-                    let decodedReviews = try JSONDecoder().decode([Reviews].self, from: data)
-                    DispatchQueue.main.async {
-                        self.reviews = decodedReviews.filter { $0.user_id != currentUser }
-                        self.myReview = decodedReviews.first(where: { $0.user_id == currentUser })
-                    }
-                } catch {
-                    print("Failed to decode JSON: \(error)")
-                }
+        guard let url = URL(string: "\(CommonUrl.url)api/shop/shop/reviews/reviews/\(shopId)") else {
+            print("Invalid URL")
+            return
+        }
+
+        let api = APIConnect(url: url)
+        do {
+            let data = try await api.getRequest()
+            let decodedReviews = try JSONDecoder().decode([Reviews].self, from: data)
+            //print("API Response: \(decodedReviews)")
+            await MainActor.run {
+                self.reviews = decodedReviews.filter { $0.user_id != currentUser }
+                self.myReview = decodedReviews.first(where: { $0.user_id == currentUser })
             }
-        }.resume()
-        
-        
+        } catch {
+            print("Error: \(error.localizedDescription)")
+        }
     }
     
     ///レビュー投稿

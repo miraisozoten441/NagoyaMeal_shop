@@ -11,8 +11,7 @@ struct ShopView: View {
     
     let genreId: String
     let currentUser: String
-    @StateObject private var svm: ShopViewModel
-    @StateObject private var fvm = FavoriteViewModel()
+    @StateObject private var svm = ShopViewModel()
     //一覧とマップの表示を切り替え
     @State private var selectedTab: Tab?
     @State private var tabProgress: CGFloat = 0
@@ -25,24 +24,12 @@ struct ShopView: View {
     @State var selectGenre: String = ""
     @State var selectSort: String = "人気順"
     
-    let genreLists: [Genres]
+    @ObservedObject var gvm: GenreViewModel
     
     @State private var sortLists: [String] = ["口コミ順","人気順","評価順","お値段順","お店名順"]
     
-    
-    init(genreId: String, currentUser: String, genreLists: [Genres]) {
-        self.genreId = genreId
-        self.currentUser = currentUser
-        self.genreLists = genreLists
-        _svm = StateObject(wrappedValue: ShopViewModel(genreId: genreId, userId: currentUser))
-    }
-    
-    
     var body: some View {
         ZStack{
-//            let _ = print("-------------------")
-//            let _ = print(svm.shops)
-//            let _ = print(svm.favoritesShops)
             //背景色
             Color.baseBg
                 .ignoresSafeArea()
@@ -66,7 +53,7 @@ struct ShopView: View {
                     
                     ScrollView(.horizontal){
                         LazyHStack(spacing: 0){
-                            ShopListCells(svm: svm, currentUser: currentUser)
+                            ShopListCells(svm: svm, currentUser: currentUser, genreId: genreId)
                                 .id(Tab.lists)
                                 .containerRelativeFrame(.horizontal)
                             ShopMapView(shopList: svm.shops)
@@ -93,7 +80,7 @@ struct ShopView: View {
         .navigationBarHidden(true)
         .sheet(isPresented: $isGenre){
             
-            GenrePicker(genreLists: genreLists, select: $selectGenre)
+            GenrePicker(genreLists: gvm.genres, select: $selectGenre)
                 .presentationDetents([
                     .fraction(0.4)
                 ])
@@ -108,8 +95,16 @@ struct ShopView: View {
             
         }
         .onAppear{
-            Task{ await svm.fetchFavoritesShops(shops: svm.shops)}
-            selectGenre = genreLists.first(where: { $0.id == genreId })?.genre_name ?? ""
+            Task{
+                await svm.fetchShops(genreId: genreId)
+                await svm.fetchFavorites(userId: currentUser)
+                await svm.fetchFavoritesShops()
+               
+                svm.convertToFavoriteShops()
+               
+            }
+           
+            selectGenre = gvm.genres.first(where: { $0.id == genreId })?.genre_name ?? ""
         }
         
     }
@@ -155,5 +150,5 @@ struct ShopView: View {
 }
 
 #Preview {
-    ShopView(genreId: "1", currentUser: "00779ab7e49b4fcebe61aed9a4827b92", genreLists: Genres.MOCK_GENRE)
+    ShopView(genreId: "1", currentUser: "00779ab7e49b4fcebe61aed9a4827b92", gvm: GenreViewModel())
 }

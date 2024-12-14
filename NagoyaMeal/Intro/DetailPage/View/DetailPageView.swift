@@ -12,8 +12,9 @@ struct DetailPageView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var rvm = ReviewViewModel()
     @StateObject var reportvm = ReportViewModel()
+    @ObservedObject var svm: ShopViewModel
     
-    let shop: Shops
+    let shop: FavoriteShops
     let currentUser: String
     
     @State private var isReport: Bool = false
@@ -33,7 +34,7 @@ struct DetailPageView: View {
                     dismiss()
                 }
                 ScrollView(showsIndicators: false){
-                    DetailTitle(genre: "ひつまぶし", shopName: shop.shop_name, review: shop.shop_review, status: shop.shop_now_open, openingTimes: "10時~19時", address: shop.shop_address)
+                    DetailTitle(genre: "ひつまぶし", currentUser: currentUser, shop: shop, svm: svm)
                     
                     Divider()
                     
@@ -159,5 +160,6 @@ struct DetailPageView: View {
 }
 
 #Preview {
-    DetailPageView(shop: Shops.MOCK_SHOP[0], currentUser: "test_token1")
+    let shop =  FavoriteShops(id: "1", shop_name: "1", shop_review: 1, shop_now_open: true, shop_address: "w", shop_phoneNumber: "0", isFavorite: true)
+    DetailPageView(svm: ShopViewModel(), shop: shop, currentUser: "a")
 }

@@ -126,122 +126,11 @@ struct MapSheetCell: View {
         .padding(.vertical, 8)
         
     }
+    
+    
 }
 
-//shopListのcell
-struct ShopListCell: View {
-    
-    let genre: String
-    let distance: Int
-    let openingTimes: String
-    
-    let shop: Shops
-    @State var isFavorite = false
-    
-    @ObservedObject var svm: ShopViewModel
-    let currentUser: String
-    
-    init(genre: String, distance: Int, openingTimes: String, shop: Shops, svm: ShopViewModel, currentUser: String){
-        self.genre = genre
-        self.distance = distance
-        self.openingTimes = openingTimes
-        self.shop = shop
-        self.svm = svm
-        self.currentUser = currentUser
-        isFavorite = svm.favoritesShops.contains(where: { $0.shopId == shop.id })
-    }
 
-    
-    var body: some View{
-        
-        
-        HStack{
-            
-            VStack{
-                VStack{
-                    HStack{
-                        Text(genre)
-                            .frame(width: 100)
-                            .foregroundStyle(.white)
-                            .background(.mainBg)
-                        
-                        Spacer()
-                    }
-                    
-                    //お店の名前
-                    HStack{
-                        Text(shop.shop_name)
-                        
-                            .lineLimit(1)
-                        
-                        Spacer()
-                        
-                        Button{
-                            if(isFavorite){
-                                isFavorite = false
-                                Task {
-                                    if let df = svm.favoritesShops.first(where: { $0.shopId == shop.id }) {
-                                        try await svm.deleteFavorites(favoriteId: df.favoriteId) { data in
-                                            await MainActor.run {
-                                                print("削除が完了")
-                                            }
-                                        }
-                                    } else {
-                                        print("一致するFavoriteShopが見つかりませんでした")
-                                    }
-                                }
-                            } else {
-                                isFavorite = true
-                                Task {
-                                    try await svm.createFavorites(shopId: shop.id, userId: currentUser) {data in
-                                        await MainActor.run {
-                                            
-                                        }
-                                    }
-                                    await svm.fetchFavorites(userId: currentUser)
-                                }
-                                
-                            }
-                            
-                        } label: {
-                            Image(systemName: isFavorite ? "heart.fill" : "heart")
-                                .font(.title)
-                                .foregroundStyle(isFavorite ? .pink : .primary)
-                        }
-                        .padding(.horizontal)
-                        
-                    }
-                    .font(.title3)
-                    //評価 & 距離
-                    HStack{
-                        Text(String(format: "%.1f", shop.shop_review))
-                        StarRating(rating: shop.shop_review)
-                        Text("・")
-                        //距離
-                        Text("\(distance)m")
-                        Spacer()
-                        
-                    }
-                    
-                    //営業状態
-                    HStack{
-                        Text(shop.shop_now_open ? "営業中": "休業中")
-                            .lineLimit(1)
-                        Text(openingTimes)
-                        Spacer()
-                    }
-                    
-                }
-                .padding(.leading)
-            }
-        }
-        .onAppear{
-//            isFavorite = fvm.favorites.shop_id == shop.id
-        }
-        .padding(.vertical, 8)
-        
-    }
-}
 
 //doubleを星で表示
 struct StarRating: View {
@@ -383,14 +272,12 @@ struct WordOfMouth: View {
 struct DetailTitle: View {
     
     let genre: String
+    let currentUser: String
     
-    let shopName: String
-    let review: Float
-//    let distance: Int
-    let status: Bool
-    let openingTimes: String
-    let address: String
-    @State private var isFavorite = false
+    let shop: FavoriteShops
+    let openingTimes: String = "24時間"
+    
+    @ObservedObject var svm: ShopViewModel
     
     var body: some View{
         HStack{
@@ -409,27 +296,47 @@ struct DetailTitle: View {
                     
                     //お店の名前
                     HStack{
-                        Text(shopName)
+                        Text(shop.shop_name)
                         
                             .lineLimit(1)
                         
                         Spacer()
                         
-                        Button{
-                            isFavorite.toggle()
-                        } label: {
-                            Image(systemName: isFavorite ? "heart.fill" : "heart")
-                                .font(.title)
-                                .foregroundStyle(isFavorite ? .pink : .primary)
+                        if shop.isFavorite {
+                            Button {
+                                delete(shop: shop)
+                            } label: {
+                                Image(systemName: "heart.fill")
+                                    .font(.title)
+                                    .foregroundStyle(.pink)
+                            }
+                            .padding(.horizontal)
+                        } else {
+                            Button{
+                                Task {
+                                    try await svm.createFavorites(shopId: shop.id, userId: currentUser) {data in
+                                        await MainActor.run {
+                                            
+                                        }
+                                    }
+                                    await svm.fetchFavorites(userId: currentUser)
+                                    await svm.fetchFavoritesShops()
+                                    
+                                }
+                            } label: {
+                                Image(systemName: "heart")
+                                    .font(.title)
+                                    .foregroundStyle(.primary)
+                            }
+                            .padding(.horizontal)
                         }
-                        .padding(.horizontal)
                         
                     }
                     .font(.title3)
                     //評価 & 距離
                     HStack{
-                        Text(String(format: "%.1f", review))
-                        StarRating(rating: review)
+                        Text(String(format: "%.1f", shop.shop_review))
+                        StarRating(rating: shop.shop_review)
                         Spacer()
 //                        Text("・")
                         //距離
@@ -440,7 +347,7 @@ struct DetailTitle: View {
                     
                     //営業状態
                     HStack{
-                        Text(status ? "営業中": "休業中")
+                        Text(shop.shop_now_open ? "営業中": "休業中")
                             .lineLimit(1)
                         Text(openingTimes)
                         Spacer()
@@ -449,7 +356,7 @@ struct DetailTitle: View {
                     //住所
                     HStack{
                         Text("住所:")
-                        Text(address)
+                        Text(shop.shop_address)
                             .lineLimit(1)
                         Spacer()
                     }
@@ -489,6 +396,23 @@ struct DetailTitle: View {
         }
         .padding(.vertical, 8)
         
+    }
+    
+    func delete(shop: FavoriteShops){
+        Task {
+            if let df = svm.fs.first(where: { $0.shopId == shop.id }) {
+                try await svm.deleteFavorites(favoriteId: df.favoriteId) { data in
+                    await MainActor.run {
+                        print("削除が完了")
+                    }
+                }
+                await svm.fetchFavorites(userId: currentUser)
+                await svm.fetchFavoritesShops()
+                
+            } else {
+                print("一致するFavoriteShopが見つかりませんでした")
+            }
+        }
     }
 }
 

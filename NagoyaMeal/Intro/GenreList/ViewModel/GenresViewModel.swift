@@ -10,25 +10,28 @@ import SwiftUI
 class GenreViewModel: ObservableObject {
     @Published var genres: [Genres] = []
     
-    init() {
-        fetchGenres()
+    init(){
+        Task{
+            await fetchGenres()
+        }
     }
 
-    func fetchGenres() {
-        guard let url = URL(string: "\(CommonUrl.url)api/shop/shop/genres/genres") else { return }
-        
-        
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if let data = data {
-                do {
-                    let decodedGenres = try JSONDecoder().decode([Genres].self, from: data)
-                    DispatchQueue.main.async {
-                        self.genres = decodedGenres
-                    }
-                } catch {
-                    print("Failed to decode JSON: \(error)")
-                }
+    func fetchGenres() async {
+        guard let url = URL(string: "\(CommonUrl.url)api/shop/shop/genres/genres") else {
+            print("Invalid URL")
+            return
+        }
+
+        let api = APIConnect(url: url)
+        do {
+            let data = try await api.getRequest()
+            let decodedGenres = try JSONDecoder().decode([Genres].self, from: data)
+            //print("API Response: \(decodedGenres)")
+            await MainActor.run {
+                self.genres = decodedGenres
             }
-        }.resume()
+        } catch {
+            print("Error: \(error.localizedDescription)")
+        }
     }
 }

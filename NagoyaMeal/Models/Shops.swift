@@ -14,8 +14,6 @@ struct Shops: Codable, Identifiable {
     let shop_now_open: Bool
     let shop_address: String
     let shop_phoneNumber: String
-//    let genre_id: String
-    
 }
 
 extension Shops {

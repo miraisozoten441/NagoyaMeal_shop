@@ -10,7 +10,7 @@ import SwiftUI
 struct CreateReviewPage: View {
     
     let currentUser: String
-    let shop: Shops
+    let shop: FavoriteShops
     let isUpdate: Bool
     
     @ObservedObject var rvm: ReviewViewModel
