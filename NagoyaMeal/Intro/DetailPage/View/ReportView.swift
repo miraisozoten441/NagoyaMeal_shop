@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ReportView: View {
+    @ObservedObject var reportvm: ReportViewModel
+    
     @State private var showPopup = false
     @State private var selectedReport: String?
     @Environment(\.dismiss) var dismiss
@@ -55,8 +57,22 @@ struct ReportView: View {
                 .listStyle(InsetGroupedListStyle())
                 .confirmationDialog("この内容を報告しますか？", isPresented: $showPopup, titleVisibility: .visible) {
                     Button("報告する", role: .destructive) {
-                        // 報告の処理をここに記載
-                        print("\(selectedReport ?? "")を報告しました")
+                        if let reportBody = selectedReport {
+                            Task{
+                                do{
+                                    try await reportvm.createReport(reportBody: reportBody) {data in
+                                        await MainActor.run {
+                                            print("報告")
+                                            
+                                        }
+                                    }
+                                } catch {
+                                    print("Delete error: \(error)")
+                                }
+                                reportvm.selectedReview = nil
+                                dismiss()
+                            }
+                        }
                     }
                     Button("キャンセル", role: .cancel) {}
                 }
@@ -67,5 +83,5 @@ struct ReportView: View {
 }
 
 #Preview {
-    ReportView()
+    ReportView(reportvm: ReportViewModel())
 }

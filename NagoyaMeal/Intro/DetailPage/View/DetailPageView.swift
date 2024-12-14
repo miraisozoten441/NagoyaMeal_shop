@@ -11,6 +11,7 @@ struct DetailPageView: View {
     
     @Environment(\.dismiss) private var dismiss
     @StateObject private var rvm = ReviewViewModel()
+    @StateObject var reportvm = ReportViewModel()
     
     let shop: Shops
     let currentUser: String
@@ -60,7 +61,10 @@ struct DetailPageView: View {
             }
             .navigationBarHidden(true)
             .fullScreenCover(isPresented: $isReport){
-                ReportView()
+                
+                ReportView(reportvm: reportvm)
+                
+                
             }
             .sheet(isPresented: $isUserReview){
                 CreateReviewPage(currentUser: currentUser, shop: shop, isUpdate: isUpdate, rvm: rvm)
@@ -129,7 +133,11 @@ struct DetailPageView: View {
                     HStack{
                         Spacer()
                         Button{
+                            reportvm.selectedReview = review
+                            
                             isReport = true
+                            
+                            
                         }label: {
                             HStack{
                                 Text("報告")
