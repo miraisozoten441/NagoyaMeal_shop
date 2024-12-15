@@ -161,6 +161,7 @@ struct ShopView: View {
                 .contentShape(.capsule)
                 .onTapGesture {
                     withAnimation(.snappy){
+                        isSheet = false
                         selectedTab = tab
                     }
                 }

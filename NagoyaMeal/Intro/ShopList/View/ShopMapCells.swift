@@ -10,7 +10,6 @@ import SwiftUI
 struct ShopMapCells: View {
     @ObservedObject var gvm: GenreViewModel
     @ObservedObject var svm: ShopViewModel
-    let genre: String = "ひつまぶし"
     let currentUser: String
     let openingTimes: String = "24時間"
     
@@ -25,14 +24,6 @@ struct ShopMapCells: View {
                 
                 
                 VStack{
-                    HStack{
-                        Text(genre)
-                            .frame(width: 100)
-                            .foregroundStyle(.white)
-                            .background(.mainBg)
-                        
-                        Spacer()
-                    }
                     
                     //お店の名前
                     HStack{
@@ -97,24 +88,7 @@ struct ShopMapCells: View {
                     isSheet = false
                     isShopSheet = true
                 }
-                .onAppear{
-                    if let selectGenreId = gvm.getGenreId(){
-                        Task{
-                            let sortKey = svm.getSortKey(from: svm.selectSort)
-                            
-                            await svm.fetchShops(genreId: selectGenreId, sortKey: sortKey)
-                            await svm.fetchFavorites(userId: currentUser)
-                            
-                            svm.convertToFavoriteShops()
-                            
-                            await svm.fetchFavoritesShops()
-                            
-                            
-                            
-                        }
-                    }
-                    
-                }
+                
                 .padding(.vertical, 8)
                 
                 
@@ -128,6 +102,24 @@ struct ShopMapCells: View {
         .fullScreenCover(isPresented: $isShopSheet) {
             if let shop = selectShop {
                 DetailPageView(svm: svm, shop: shop, currentUser: currentUser)
+            }
+            
+        }
+        .onAppear{
+            if let selectGenreId = gvm.getGenreId(){
+                Task{
+                    let sortKey = svm.getSortKey(from: svm.selectSort)
+                    
+                    await svm.fetchShops(genreId: selectGenreId, sortKey: sortKey)
+                    await svm.fetchFavorites(userId: currentUser)
+                    
+                    svm.convertToFavoriteShops()
+                    
+                    await svm.fetchFavoritesShops()
+                    
+                    
+                    
+                }
             }
             
         }

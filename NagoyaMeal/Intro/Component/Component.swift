@@ -163,11 +163,13 @@ struct GenreListCell: View {
     let GenerName: String
     
     var body: some View {
-        Image("\(GenerName)")
-            .resizable()
-            .scaledToFill()
-            .frame(width: h + 20, height: h)
-            .cornerRadius(15)
+//        Image("\(GenerName)")
+//            .resizable()
+//            .scaledToFill()
+//            .frame(width: h + 20, height: h)
+//            .cornerRadius(15)
+        Rectangle()
+            .frame(height: h)
         
             .overlay {
                 Color.white
@@ -267,8 +269,6 @@ struct WordOfMouth: View {
 
 //詳細ページのタイトル部分
 struct DetailTitle: View {
-    
-    let genre: String
     let currentUser: String
     
     let shop: FavoriteShops
@@ -281,16 +281,6 @@ struct DetailTitle: View {
             
             VStack{
                 VStack{
-                    HStack{
-                        //ここに営業中やその他のジャンルを表示できるようにする
-                        Text(genre)
-                            .frame(width: 100)
-                            .foregroundStyle(.white)
-                            .background(.mainBg)
-                        
-                        Spacer()
-                    }
-                    
                     //お店の名前
                     HStack{
                         Text(shop.shop_name)
@@ -335,10 +325,6 @@ struct DetailTitle: View {
                         Text(String(format: "%.1f", shop.shop_review))
                         StarRating(rating: shop.shop_review)
                         Spacer()
-                        //                        Text("・")
-                        //距離
-                        //                        Text("\(distance)m")
-                        //                        Spacer()
                         
                     }
                     
@@ -354,6 +340,7 @@ struct DetailTitle: View {
                     HStack{
                         Text("住所:")
                         Text(shop.shop_address)
+                            .font(.caption)
                             .lineLimit(1)
                         Spacer()
                     }
@@ -376,16 +363,6 @@ struct DetailTitle: View {
                         CustomButtonShopUnder(title: "共有", systemName: "square.and.arrow.up"){
                             print("共有")
                         }
-                        //                        if isFavorite {
-                        //                            CustomButtonShopUnder(title: "保存", systemName: "bookmark"){
-                        //                                print("保存")
-                        //                            }
-                        //                        }else {
-                        //                            CustomButtonShopUnder(title: "保存", systemName: "bookmark"){
-                        //                                print("保存")
-                        //                            }
-                        //                        }
-                        
                     }
                 }
                 

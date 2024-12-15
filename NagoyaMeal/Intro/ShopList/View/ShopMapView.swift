@@ -19,8 +19,7 @@ struct ShopMapView: View {
     
     var body: some View {
         VStack {
-            
-            Map()
+            MapView(gvm: gvm, svm: svm, currentUser: currentUser)
             
             Spacer()
             
@@ -46,6 +45,21 @@ struct ShopMapView: View {
                 .fraction(0.4),
             ])
             .presentationBackgroundInteraction(.enabled)
+        }
+        .onAppear{
+            if let selectGenreId = gvm.getGenreId(){
+                Task{
+                    let sortKey = svm.getSortKey(from: svm.selectSort)
+                    
+                    await svm.fetchShops(genreId: selectGenreId, sortKey: sortKey)
+                    await svm.fetchFavorites(userId: currentUser)
+                    
+                    svm.convertToFavoriteShops()
+                    
+                    await svm.fetchFavoritesShops()
+
+                }
+            }
         }
     }
 }

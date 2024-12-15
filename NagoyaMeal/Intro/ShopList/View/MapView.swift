@@ -9,38 +9,53 @@ import SwiftUI
 import MapKit
 
 struct MapView: View {
+    @ObservedObject var gvm: GenreViewModel
+    @ObservedObject var svm: ShopViewModel
+    let currentUser: String
     
-    let locationManager = LocationManager()
+    
+    @StateObject var locationManager = LocationManager()
+    @StateObject var mapvm = MapViewModel()
+    @State private var userCameraPosition: MapCameraPosition = .userLocation(followsHeading: true,
+                                                                             fallback: .camera(MapCamera(centerCoordinate: .nagoyaStation,
+                                                                                                             distance: 5000,
+                                                                                                             pitch: 0)))
     
     var body: some View {
-        Map(interactionModes: .all) {
-//            UserAnnotation(anchor: .center) { userLocation in
-//                VStack {
-//                    
-//                    Circle()
-//                        .foregroundStyle(.blue)
-//                        .padding(2)
-//                        .background(
-//                            Circle()
-//                                .fill(.white)
-//                        )
-//                    Text("me")
-//                }
-//            }
-            UserAnnotation()
+        
+        
+        
+        Map(position: $userCameraPosition, interactionModes: .all) {
+            UserAnnotation(anchor: .center)
+            ForEach(mapvm.mapShops) { shop in
+                Marker(coordinate: CLLocationCoordinate2D(latitude: shop.lat, longitude: shop.long)) {
+                    Text(shop.name)
+                    Image(systemName: "fork.knife")
+                }
+                .tint(Color.accent)
+            }
+            
+            
+        }
+        .task() {
+            locationManager.requestLocationAuthorization()
         }
         .mapControls {
             MapUserLocationButton()
         }
         .onAppear {
-            locationManager.requestLocationAuthorization()
+            mapvm.geocoding(shops: svm.shops)
+
+        }
+        .onChange(of: svm.shops) {
+            mapvm.geocoding(shops: svm.shops)
         }
     }
 }
 
 
 
-#Preview {
-    MapView()
-}
+//#Preview {
+//    MapView()
+//}
 

@@ -34,7 +34,7 @@ struct DetailPageView: View {
                     dismiss()
                 }
                 ScrollView(showsIndicators: false){
-                    DetailTitle(genre: "ひつまぶし", currentUser: currentUser, shop: shop, svm: svm)
+                    DetailTitle(currentUser: currentUser, shop: shop, svm: svm)
                     
                     Divider()
                     

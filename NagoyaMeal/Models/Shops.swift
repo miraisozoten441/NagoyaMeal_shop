@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct Shops: Codable, Identifiable {
+struct Shops: Codable, Identifiable, Equatable {
     let id: String
     let shop_name: String
     let shop_review: Float

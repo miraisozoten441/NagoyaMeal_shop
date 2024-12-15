@@ -10,7 +10,6 @@ import SwiftUI
 struct ShopListCells: View {
     @ObservedObject var gvm: GenreViewModel
     @ObservedObject var svm: ShopViewModel
-    let genre: String = "ひつまぶし"
     let currentUser: String
     let openingTimes: String = "24時間"
     
@@ -24,15 +23,6 @@ struct ShopListCells: View {
                     
                     
                     VStack{
-                        HStack{
-                            Text(genre)
-                                .frame(width: 100)
-                                .foregroundStyle(.white)
-                                .background(.mainBg)
-                            
-                            Spacer()
-                        }
-                        
                         //お店の名前
                         HStack{
                             Text(shop.shop_name)
@@ -93,24 +83,7 @@ struct ShopListCells: View {
                     
                     
                     .foregroundStyle(Color(.label))
-                    .onAppear{
-                        if let selectGenreId = gvm.getGenreId(){
-                            Task{
-                                let sortKey = svm.getSortKey(from: svm.selectSort)
-                                
-                                await svm.fetchShops(genreId: selectGenreId, sortKey: sortKey)
-                                await svm.fetchFavorites(userId: currentUser)
-                                
-                                svm.convertToFavoriteShops()
-                                
-                                await svm.fetchFavoritesShops()
-                                
-                                
-                                
-                            }
-                        }
-
-                    }
+                   
                     .padding(.vertical, 8)
                 }
                 
@@ -120,6 +93,24 @@ struct ShopListCells: View {
                     .frame(height: 1)
                     .foregroundStyle(.gray)
             }
+        }
+        .onAppear{
+            if let selectGenreId = gvm.getGenreId(){
+                Task{
+                    let sortKey = svm.getSortKey(from: svm.selectSort)
+                    
+                    await svm.fetchShops(genreId: selectGenreId, sortKey: sortKey)
+                    await svm.fetchFavorites(userId: currentUser)
+                    
+                    svm.convertToFavoriteShops()
+                    
+                    await svm.fetchFavoritesShops()
+                    
+                    
+                    
+                }
+            }
+
         }
         
     }
