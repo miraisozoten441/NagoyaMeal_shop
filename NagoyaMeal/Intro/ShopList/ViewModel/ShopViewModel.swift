@@ -146,6 +146,7 @@ class ShopViewModel: ObservableObject {
                 shop_now_open: shop.shop_now_open,
                 shop_address: shop.shop_address,
                 shop_phoneNumber: shop.shop_phoneNumber,
+                genres: shop.genres,
                 isFavorite:  false
             )
         }
@@ -179,5 +180,6 @@ struct FavoriteShops: Identifiable {
     let shop_now_open: Bool
     let shop_address: String
     let shop_phoneNumber: String
+    let genres: [Genres]
     var isFavorite: Bool
 }

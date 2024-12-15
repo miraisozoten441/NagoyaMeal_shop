@@ -160,6 +160,6 @@ struct DetailPageView: View {
 }
 
 #Preview {
-    let shop =  FavoriteShops(id: "1", shop_name: "1", shop_review: 1, shop_now_open: true, shop_address: "w", shop_phoneNumber: "0", isFavorite: true)
+    let shop =  FavoriteShops(id: "1", shop_name: "1", shop_review: 1, shop_now_open: true, shop_address: "w", shop_phoneNumber: "0", genres: Genres.MOCK_GENRE, isFavorite: true)
     DetailPageView(svm: ShopViewModel(), shop: shop, currentUser: "a")
 }

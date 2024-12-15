@@ -22,6 +22,17 @@ struct ShopListCells: View {
                     
                     
                     VStack{
+                        HStack{
+                            ForEach(shop.genres, id: \.id) { genre in
+                                Text(genre.genre_name)
+                                    .padding(3)
+                                    .foregroundStyle(.white)
+                                    .background(.mainBg)
+                            }
+                            
+                            Spacer()
+                        }
+                        
                         //お店の名前
                         HStack{
                             Text(shop.shop_name)
@@ -82,7 +93,7 @@ struct ShopListCells: View {
                     
                     
                     .foregroundStyle(Color(.label))
-                   
+                    
                     .padding(.vertical, 8)
                 }
                 
@@ -109,7 +120,7 @@ struct ShopListCells: View {
                     
                 }
             }
-
+            
         }
         
     }
