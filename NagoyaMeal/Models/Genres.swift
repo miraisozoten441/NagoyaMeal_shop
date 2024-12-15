@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct Genres: Codable, Identifiable {
+struct Genres: Codable, Identifiable, Equatable {
     let id: String
     let genre_name: String
     

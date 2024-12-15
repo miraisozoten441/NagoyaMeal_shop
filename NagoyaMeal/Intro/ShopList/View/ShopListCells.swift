@@ -21,7 +21,6 @@ struct ShopListCells: View {
                 NavigationLink(destination: DetailPageView(svm: svm, shop: shop, currentUser: currentUser)){
                     
                     
-                    
                     VStack{
                         //お店の名前
                         HStack{

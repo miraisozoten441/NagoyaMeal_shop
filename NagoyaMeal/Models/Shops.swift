@@ -14,10 +14,22 @@ struct Shops: Codable, Identifiable, Equatable {
     let shop_now_open: Bool
     let shop_address: String
     let shop_phoneNumber: String
+    let genres: [Genres]
 }
 
 extension Shops {
     static var MOCK_SHOP: [Shops] = [
-        .init(id: "1", shop_name: "ひつまぶし", shop_review: 4.5, shop_now_open: true, shop_address: "名古屋市中区", shop_phoneNumber: "xxx-xxxx-xxxx")
+        .init(
+            id: "1",
+            shop_name: "ひつまぶし",
+            shop_review: 4.5,
+            shop_now_open: true,
+            shop_address: "名古屋市中区",
+            shop_phoneNumber: "xxx-xxxx-xxxx",
+            genres: [
+                Genres(id: "1", genre_name: "和食"),
+                Genres(id: "2", genre_name: "ひつまぶし")
+            ]
+        )
     ]
 }
