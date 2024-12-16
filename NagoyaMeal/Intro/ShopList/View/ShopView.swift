@@ -51,10 +51,10 @@ struct ShopView: View {
                     
                     ScrollView(.horizontal){
                         LazyHStack(spacing: 0){
-                            ShopListCells(gvm: gvm, svm: svm, currentUser: currentUser)
+                            ShopListCells(gvm: gvm, svm: svm, currentUser: currentUser, isOpen: $isOpen)
                                 .id(Tab.lists)
                                 .containerRelativeFrame(.horizontal)
-                            ShopMapView(gvm: gvm, svm: svm, currentUser: currentUser, isSheet: $isSheet)
+                            ShopMapView(gvm: gvm, svm: svm, currentUser: currentUser, isSheet: $isSheet, isOpen: $isOpen)
                                 .id(Tab.maps)
                                 .containerRelativeFrame(.horizontal)
                         }

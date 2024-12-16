@@ -16,90 +16,191 @@ struct ShopMapCells: View {
     @State private var isDetail = false
     
     @Binding var isSheet: Bool
+    @Binding var isOpen: Bool
     
     var body: some View {
         ScrollView{
-            ForEach(svm.favoritesShops){ shop in
-                VStack{
-                    HStack{
-                        ForEach(shop.genres, id: \.id) { genre in
-                            Text(genre.genre_name)
-                                .padding(3)
-                                .foregroundStyle(.white)
-                                .background(.mainBg)
-                        }
+            if isOpen{
+                if svm.favoritesShops.filter({ $0.shop_now_open }).isEmpty{
+                    Text("店舗がありません")
+                        .padding()
+                } else{
+                    ForEach(svm.favoritesShops.filter { $0.shop_now_open }){ shop in
                         
-                        Spacer()
-                    }
-                    //お店の名前
-                    HStack{
-                        Text(shop.shop_name)
-                        
-                            .lineLimit(1)
-                        
-                        Spacer()
-                        
-                        if shop.isFavorite {
-                            Button {
-                                delete(shop: shop)
-                            } label: {
-                                Image(systemName: "heart.fill")
-                                    .font(.title)
-                                    .foregroundStyle(.pink)
-                            }
-                            .padding(.horizontal)
-                        } else {
-                            Button{
-                                Task {
-                                    try await svm.createFavorites(shopId: shop.id, userId: currentUser) {data in
-                                        await MainActor.run {
-                                            
-                                        }
+                        NavigationLink(destination: DetailPageView(svm: svm, shop: shop, currentUser: currentUser)){
+                            
+                            
+                            VStack{
+                                HStack{
+                                    ForEach(shop.genres, id: \.id) { genre in
+                                        Text(genre.genre_name)
+                                            .padding(3)
+                                            .foregroundStyle(.white)
+                                            .background(.mainBg)
                                     }
-                                    await svm.fetchFavorites(userId: currentUser)
-                                    await svm.fetchFavoritesShops()
+                                    
+                                    Spacer()
                                 }
-                            } label: {
-                                Image(systemName: "heart")
-                                    .font(.title)
-                                    .foregroundStyle(.primary)
+                                
+                                //お店の名前
+                                HStack{
+                                    Text(shop.shop_name)
+                                    
+                                        .lineLimit(1)
+                                    
+                                    Spacer()
+                                    
+                                    if shop.isFavorite {
+                                        Button {
+                                            delete(shop: shop)
+                                        } label: {
+                                            Image(systemName: "heart.fill")
+                                                .font(.title)
+                                                .foregroundStyle(.pink)
+                                        }
+                                        .padding(.horizontal)
+                                    } else {
+                                        Button{
+                                            Task {
+                                                try await svm.createFavorites(shopId: shop.id, userId: currentUser) {data in
+                                                    await MainActor.run {
+                                                        
+                                                    }
+                                                }
+                                                await svm.fetchFavorites(userId: currentUser)
+                                                await svm.fetchFavoritesShops()
+                                            }
+                                        } label: {
+                                            Image(systemName: "heart")
+                                                .font(.title)
+                                                .foregroundStyle(.primary)
+                                        }
+                                        .padding(.horizontal)
+                                    }
+                                    
+                                    
+                                }
+                                .font(.title3)
+                                //評価 & 距離
+                                HStack{
+                                    Text(String(format: "%.1f", shop.shop_review))
+                                    StarRating(rating: shop.shop_review)
+                                    Spacer()
+                                    
+                                }
+                                
+                                //営業状態
+                                HStack{
+                                    Text(shop.shop_now_open ? "営業中": "休業中")
+                                        .lineLimit(1)
+//                                    Text(openingTimes)
+                                    Spacer()
+                                }
+                                
                             }
-                            .padding(.horizontal)
+                            .padding(.leading)
+                            .foregroundStyle(Color(.label))
+                            .padding(.vertical, 8)
                         }
                         
                         
-                    }
-                    .font(.title3)
-                    //評価 & 距離
-                    HStack{
-                        Text(String(format: "%.1f", shop.shop_review))
-                        StarRating(rating: shop.shop_review)
-                        Spacer()
                         
+                        Rectangle()
+                            .frame(height: 1)
+                            .foregroundStyle(.gray)
                     }
-                    
-                    //営業状態
-                    HStack{
-                        Text(shop.shop_now_open ? "営業中": "休業中")
-                            .lineLimit(1)
-                        Text(openingTimes)
-                        Spacer()
+                }
+            } else {
+                if svm.favoritesShops.isEmpty{
+                    Text("店舗がありません").padding()
+                } else{
+                    ForEach(svm.favoritesShops){ shop in
+                        
+                        NavigationLink(destination: DetailPageView(svm: svm, shop: shop, currentUser: currentUser)){
+                            
+                            
+                            VStack{
+                                HStack{
+                                    ForEach(shop.genres, id: \.id) { genre in
+                                        Text(genre.genre_name)
+                                            .padding(3)
+                                            .foregroundStyle(.white)
+                                            .background(.mainBg)
+                                    }
+                                    
+                                    Spacer()
+                                }
+                                
+                                //お店の名前
+                                HStack{
+                                    Text(shop.shop_name)
+                                    
+                                        .lineLimit(1)
+                                    
+                                    Spacer()
+                                    
+                                    if shop.isFavorite {
+                                        Button {
+                                            delete(shop: shop)
+                                        } label: {
+                                            Image(systemName: "heart.fill")
+                                                .font(.title)
+                                                .foregroundStyle(.pink)
+                                        }
+                                        .padding(.horizontal)
+                                    } else {
+                                        Button{
+                                            Task {
+                                                try await svm.createFavorites(shopId: shop.id, userId: currentUser) {data in
+                                                    await MainActor.run {
+                                                        
+                                                    }
+                                                }
+                                                await svm.fetchFavorites(userId: currentUser)
+                                                await svm.fetchFavoritesShops()
+                                            }
+                                        } label: {
+                                            Image(systemName: "heart")
+                                                .font(.title)
+                                                .foregroundStyle(.primary)
+                                        }
+                                        .padding(.horizontal)
+                                    }
+                                    
+                                    
+                                }
+                                .font(.title3)
+                                //評価 & 距離
+                                HStack{
+                                    Text(String(format: "%.1f", shop.shop_review))
+                                    StarRating(rating: shop.shop_review)
+                                    Spacer()
+                                    
+                                }
+                                
+                                //営業状態
+                                HStack{
+                                    Text(shop.shop_now_open ? "営業中": "休業中")
+                                        .lineLimit(1)
+                                    Text(openingTimes)
+                                    Spacer()
+                                }
+                                
+                            }
+                            .padding(.leading)
+                            .foregroundStyle(Color(.label))
+                            .padding(.vertical, 8)
+                        }
+                        
+                        
+                        
+                        Rectangle()
+                            .frame(height: 1)
+                            .foregroundStyle(.gray)
                     }
-                    
                 }
-                .padding(.leading)
-                .foregroundStyle(Color(.label))
-                .onTapGesture {
-                    svm.selectShop = shop
-                    isDetail = true
-                }
-                
-                .padding(.vertical, 8)
-                
-                Rectangle()
-                    .frame(height: 1)
-                    .foregroundStyle(.gray)
             }
+
         }
         .fullScreenCover(isPresented: $isDetail) {
             

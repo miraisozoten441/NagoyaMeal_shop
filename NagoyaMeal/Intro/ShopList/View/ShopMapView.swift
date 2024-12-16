@@ -14,7 +14,7 @@ struct ShopMapView: View {
     @ObservedObject var svm: ShopViewModel
     let currentUser: String
     @Binding var isSheet: Bool
-    
+    @Binding var isOpen: Bool
     
     
     var body: some View {
@@ -37,7 +37,7 @@ struct ShopMapView: View {
         }.sheet(isPresented: $isSheet){
             VStack{
                 Text("")
-                ShopMapCells(gvm: gvm, svm: svm, currentUser: currentUser, isSheet: $isSheet)
+                ShopMapCells(gvm: gvm, svm: svm, currentUser: currentUser, isSheet: $isSheet, isOpen: $isOpen)
                 
             }
             .presentationDetents([
