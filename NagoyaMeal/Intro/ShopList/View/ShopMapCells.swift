@@ -29,6 +29,13 @@ struct ShopMapCells: View {
                         
                         VStack{
                             HStack{
+                                if shop.shop_now_open {
+                                    Text("営業中")
+                                        .padding(3)
+                                        .foregroundStyle(.white)
+                                        .background(.accent)
+                                }
+                                
                                 ForEach(shop.genres, id: \.id) { genre in
                                     Text(genre.genre_name)
                                         .padding(3)
@@ -88,8 +95,6 @@ struct ShopMapCells: View {
                             
                             //営業状態
                             HStack{
-                                Text(shop.shop_now_open ? "営業中": "休業中")
-                                    .lineLimit(1)
                                 //                                    Text(openingTimes)
                                 Spacer()
                             }
@@ -116,6 +121,13 @@ struct ShopMapCells: View {
                         
                         VStack{
                             HStack{
+                                if shop.shop_now_open {
+                                    Text("営業中")
+                                        .padding(3)
+                                        .foregroundStyle(.white)
+                                        .background(.accent)
+                                }
+                                
                                 ForEach(shop.genres, id: \.id) { genre in
                                     Text(genre.genre_name)
                                         .padding(3)
@@ -175,9 +187,9 @@ struct ShopMapCells: View {
                             
                             //営業状態
                             HStack{
-                                Text(shop.shop_now_open ? "営業中": "休業中")
-                                    .lineLimit(1)
-                                Text(openingTimes)
+                                
+//                                    .lineLimit(1)
+//                                Text(openingTimes)
                                 Spacer()
                             }
                             

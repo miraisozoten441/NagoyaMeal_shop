@@ -84,7 +84,6 @@ struct ShopFilterItem: View {
                         RoundedRectangle(cornerRadius: 5)
                             .fill(Color.accent)
                     )
-                    .foregroundStyle(.black)
                     .onTapGesture {
                         isOpen.toggle()
                     }
