@@ -314,7 +314,7 @@ struct DetailTitle: View {
                                 Task {
                                     try await svm.createFavorites(shopId: shop.id, userId: currentUser) {data in
                                         await MainActor.run {
-            
+                                            
                                         }
                                     }
                                     await svm.fetchFavorites(userId: currentUser)
@@ -455,41 +455,6 @@ struct SortPicker: View {
     }
 }
 
-
-//星評価部分
-struct RatingView: View {
-    
-    @Binding var rating: Int
-    
-    var maximumRating = 5
-    
-    var offImage: Image?
-    var onImage = Image(systemName: "star.fill")
-    
-    var offColor = Color.gray
-    var onColor = Color.yellow
-    
-    var body: some View {
-        HStack {
-            ForEach(1..<maximumRating + 1, id: \.self) { number in
-                image(for: number)
-                
-                    .foregroundColor(number > rating ? offColor : onColor)
-                    .onTapGesture {
-                        rating = number
-                    }
-            }
-        }
-    }
-    func image(for number: Int) -> Image {
-        if number > rating {
-            return offImage ?? onImage
-        } else {
-            return onImage
-        }
-    }
-    
-}
 
 //評価作成時の星
 struct CreateRatingView: View {
