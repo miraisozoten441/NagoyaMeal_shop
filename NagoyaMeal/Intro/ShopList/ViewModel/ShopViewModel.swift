@@ -13,6 +13,7 @@ class ShopViewModel: ObservableObject {
     @Published var fs: [FavoriteShop] = []
     @Published var favorites: [Favorites] = []
     @Published var selectSort: String = "登録順"
+    @Published var selectShop: FavoriteShops?
     
     
     

@@ -314,11 +314,12 @@ struct DetailTitle: View {
                                 Task {
                                     try await svm.createFavorites(shopId: shop.id, userId: currentUser) {data in
                                         await MainActor.run {
-                                            
+            
                                         }
                                     }
                                     await svm.fetchFavorites(userId: currentUser)
                                     await svm.fetchFavoritesShops()
+                                    svm.selectShop?.isFavorite = true
                                     
                                 }
                             } label: {
@@ -380,6 +381,9 @@ struct DetailTitle: View {
             }
         }
         .padding(.vertical, 8)
+        .onAppear{
+            
+        }
         
     }
     
@@ -393,6 +397,8 @@ struct DetailTitle: View {
                 }
                 await svm.fetchFavorites(userId: currentUser)
                 await svm.fetchFavoritesShops()
+                svm.selectShop?.isFavorite = false
+                
                 
             } else {
                 print("一致するFavoriteShopが見つかりませんでした")

@@ -90,10 +90,7 @@ struct ShopListCells: View {
                         
                     }
                     .padding(.leading)
-                    
-                    
                     .foregroundStyle(Color(.label))
-                    
                     .padding(.vertical, 8)
                 }
                 

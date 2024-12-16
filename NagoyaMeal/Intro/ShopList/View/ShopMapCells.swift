@@ -13,16 +13,13 @@ struct ShopMapCells: View {
     let currentUser: String
     let openingTimes: String = "24時間"
     
-    @State private var isShopSheet = false
-    @State var selectShop: FavoriteShops?
+    @State private var isDetail = false
     
     @Binding var isSheet: Bool
     
     var body: some View {
         ScrollView{
             ForEach(svm.favoritesShops){ shop in
-                
-                
                 VStack{
                     HStack{
                         ForEach(shop.genres, id: \.id) { genre in
@@ -93,25 +90,20 @@ struct ShopMapCells: View {
                 .padding(.leading)
                 .foregroundStyle(Color(.label))
                 .onTapGesture {
-                    selectShop = shop
-                    isSheet = false
-                    isShopSheet = true
+                    svm.selectShop = shop
+                    isDetail = true
                 }
                 
                 .padding(.vertical, 8)
-                
-                
-                
                 
                 Rectangle()
                     .frame(height: 1)
                     .foregroundStyle(.gray)
             }
         }
-        .fullScreenCover(isPresented: $isShopSheet) {
-            if let shop = selectShop {
-                DetailPageView(svm: svm, shop: shop, currentUser: currentUser)
-            }
+        .fullScreenCover(isPresented: $isDetail) {
+            
+            DetailPageView(svm: svm, shop: svm.selectShop!, currentUser: currentUser)
             
         }
         .onAppear{

@@ -78,6 +78,7 @@ struct DetailPageView: View {
             }
         }
         .onAppear{
+            svm.selectShop = shop
             Task { await rvm.fetchReviews(shopId: shop.id, currentUser: currentUser)}
         }
         

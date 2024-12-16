@@ -33,6 +33,7 @@ struct ShopView: View {
             
             VStack (spacing: 0){
                 NavigationBackButton(){
+                    isSheet = false
                     dismiss()
                 }
                 
