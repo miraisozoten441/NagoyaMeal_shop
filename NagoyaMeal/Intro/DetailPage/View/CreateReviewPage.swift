@@ -11,7 +11,7 @@ struct CreateReviewPage: View {
     
     let currentUser: String
     let shop: FavoriteShops
-    let isUpdate: Bool
+    @Binding var isUpdate: Bool
     
     @ObservedObject var rvm: ReviewViewModel
     
@@ -23,7 +23,7 @@ struct CreateReviewPage: View {
             HStack{
                 Button{
                     rvm.inputText = ""
-                    rvm.raiting = 0
+                    rvm.raiting = 1
                     dismiss()
                 } label: {
                     Text("キャンセル")
@@ -36,6 +36,9 @@ struct CreateReviewPage: View {
                     Button{
                         if let myReview = rvm.myReview {
                             rvm.myReview = nil
+                            rvm.inputText = ""
+                            rvm.raiting = 1
+                            isUpdate = false
                             Task{
                                 do{
                                     try await rvm.deleteReview(id: myReview.id) {data in
@@ -44,11 +47,7 @@ struct CreateReviewPage: View {
                                             
                                         }
                                         await rvm.fetchReviews(shopId: shop.id, currentUser: currentUser)
-                                        await MainActor.run {
-                                            rvm.inputText = ""
-                                            rvm.raiting = 0
-                                            
-                                        }
+                                        
                                     }
                                 } catch {
                                     print("Delete error: \(error)")

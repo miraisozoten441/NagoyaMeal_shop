@@ -14,7 +14,7 @@ struct GenreListView: View {
     
     @State var genreId = ""
     
-    @State var currentUser = "test2"
+    @State var currentUser = "test1"
     
     var body: some View {
         NavigationStack {

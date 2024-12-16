@@ -11,7 +11,7 @@ class ReviewViewModel: ObservableObject {
     @Published var reviews: [Reviews] = []
     @Published var myReview: Reviews?
     @Published var inputText: String = ""
-    @Published var raiting: Int = 0
+    @Published var raiting: Int = 1
     
     
     ///レビュー取得

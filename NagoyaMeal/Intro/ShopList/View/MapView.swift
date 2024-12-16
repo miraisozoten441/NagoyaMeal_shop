@@ -42,6 +42,8 @@ struct MapView: View {
         }
         .mapControls {
             MapUserLocationButton()
+            MapPitchToggle()
+            MapScaleView()
         }
         .onAppear {
             mapvm.geocoding(shops: svm.shops)

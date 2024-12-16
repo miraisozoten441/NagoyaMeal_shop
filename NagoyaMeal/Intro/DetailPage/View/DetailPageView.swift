@@ -68,7 +68,7 @@ struct DetailPageView: View {
                 
             }
             .sheet(isPresented: $isUserReview){
-                CreateReviewPage(currentUser: currentUser, shop: shop, isUpdate: isUpdate, rvm: rvm)
+                CreateReviewPage(currentUser: currentUser, shop: shop, isUpdate: $isUpdate, rvm: rvm)
                     .interactiveDismissDisabled()
                     .presentationDetents([
                         .fraction(1),
