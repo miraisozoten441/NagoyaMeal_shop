@@ -130,8 +130,6 @@ struct MapSheetCell: View {
     
 }
 
-
-
 //doubleを星で表示
 struct StarRating: View {
     
@@ -163,14 +161,14 @@ struct GenreListCell: View {
     let GenerName: String
     
     var body: some View {
-//        Image("\(GenerName)")
-//            .resizable()
-//            .scaledToFill()
-//            .frame(width: h + 20, height: h)
-//            .cornerRadius(15)
-        Rectangle()
-            .frame(height: h)
-        
+        Image("\(GenerName)")
+            .resizable()
+            .scaledToFill()
+            .frame(width: h + 20, height: h)
+            .cornerRadius(15)
+//        Rectangle()
+//            .frame(height: h)
+//        
             .overlay {
                 Color.white
                     .cornerRadius(15)
@@ -344,7 +342,7 @@ struct DetailTitle: View {
                     HStack{
                         Text(shop.shop_now_open ? "営業中": "休業中")
                             .lineLimit(1)
-                        Text(openingTimes)
+//                        Text(openingTimes)
                         Spacer()
                     }
                     
@@ -352,31 +350,32 @@ struct DetailTitle: View {
                     HStack{
                         Text("住所:")
                         Text(shop.shop_address)
-                            .font(.caption)
+                            
                             .lineLimit(1)
                         Spacer()
                     }
+                    .font(.caption)
                     
                 }
                 
-                ScrollView(.horizontal, showsIndicators: false){
-                    HStack{
-                        Text("")
-                        
-                        CustomButtonShopUnder(title: "徒歩", systemName: "figure.walk"){
-                            print("徒歩")
-                        }
-                        CustomButtonShopUnder(title: "自動車", systemName: "car.fill"){
-                            print("車")
-                        }
-                        CustomButtonShopUnder(title: "電話", systemName: "phone.fill"){
-                            print("電話")
-                        }
-                        CustomButtonShopUnder(title: "共有", systemName: "square.and.arrow.up"){
-                            print("共有")
-                        }
-                    }
-                }
+//                ScrollView(.horizontal, showsIndicators: false){
+//                    HStack{
+//                        Text("")
+//                        
+//                        CustomButtonShopUnder(title: "徒歩", systemName: "figure.walk"){
+//                            print("徒歩")
+//                        }
+//                        CustomButtonShopUnder(title: "自動車", systemName: "car.fill"){
+//                            print("車")
+//                        }
+//                        CustomButtonShopUnder(title: "電話", systemName: "phone.fill"){
+//                            print("電話")
+//                        }
+//                        CustomButtonShopUnder(title: "共有", systemName: "square.and.arrow.up"){
+//                            print("共有")
+//                        }
+//                    }
+//                }
                 
             }
         }

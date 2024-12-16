@@ -91,7 +91,7 @@ struct ShopListCells: View {
                                 HStack{
                                     Text(shop.shop_now_open ? "営業中": "休業中")
                                         .lineLimit(1)
-                                    Text(openingTimes)
+//                                    Text(openingTimes)
                                     Spacer()
                                 }
                                 
@@ -180,7 +180,7 @@ struct ShopListCells: View {
                                 HStack{
                                     Text(shop.shop_now_open ? "営業中": "休業中")
                                         .lineLimit(1)
-                                    Text(openingTimes)
+//                                    Text(openingTimes)
                                     Spacer()
                                 }
                                 
