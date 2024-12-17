@@ -13,6 +13,7 @@ struct ShopListCells: View {
     let currentUser: String
     let openingTimes: String = "24時間"
     @Binding var isOpen: Bool
+    @State var day = ""
     
     
     var body: some View {
@@ -96,7 +97,8 @@ struct ShopListCells: View {
                                 
                                 //営業状態
                                 HStack{
-//                                    Text(openingTimes)
+                                    Text("営業時間:")
+                                    Text(svm.getTimes(times: shop.works_times))
                                     Spacer()
                                 }
                                 
@@ -190,7 +192,8 @@ struct ShopListCells: View {
                                 
                                 //営業状態
                                 HStack{
-//                                    Text(openingTimes)
+                                    Text("営業時間:")
+                                    Text(svm.getTimes(times: shop.works_times))
                                     Spacer()
                                 }
                                 
@@ -210,6 +213,8 @@ struct ShopListCells: View {
             }
         }
         .onAppear{
+            
+            
             if let selectGenreId = gvm.getGenreId(){
                 Task{
                     let sortKey = svm.getSortKey(from: svm.selectSort)

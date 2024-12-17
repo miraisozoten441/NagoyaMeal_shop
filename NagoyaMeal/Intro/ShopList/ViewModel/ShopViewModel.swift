@@ -148,9 +148,68 @@ class ShopViewModel: ObservableObject {
                 shop_address: shop.shop_address,
                 shop_phoneNumber: shop.shop_phoneNumber,
                 genres: shop.genres,
+                works_times: shop.works_times,
                 isFavorite:  false
             )
         }
+    }
+    
+    ///曜日の取得
+    func getShortWeekdayInJapan() -> String {
+        let weekdays = ["日", "月", "火", "水", "木", "金", "土"] // 日本語の短縮曜日名
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "Asia/Tokyo")! // 日本時間のタイムゾーン
+        
+        let weekdayIndex = calendar.component(.weekday, from: Date()) - 1 // 日曜日: 1, 月曜日: 2, ...
+        return weekdays[weekdayIndex]
+    }
+    
+    /// 営業時間の取得
+    func getTimes(times: [WorksTimes]) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE"
+        formatter.locale = Locale(identifier: "ja_JP")
+        formatter.timeZone = TimeZone(identifier: "Asia/Tokyo")
+        
+        let today = formatter.string(from: Date())
+
+        let todayTimes = times.filter{ $0.worksTime_week == today }
+        
+        if !todayTimes.isEmpty {
+            var resultTime = ""
+            for time in todayTimes {
+                resultTime += "\(time.worksTime_openTime) ~ \(time.worksTime_closeTime) "
+            }
+            return resultTime
+        } else {
+            return "定休日"
+        }
+    }
+    
+    func getAllTimes(times: [WorksTimes]) -> String {
+        let week = ["月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日", "日曜日"]
+        var result = ""
+        
+        if !times.isEmpty {
+            for w in week {
+                let todayTimes = times.filter{ $0.worksTime_week == w }
+                
+                if !todayTimes.isEmpty {
+                    var resultTime = ""
+                    for time in todayTimes {
+                        resultTime += "\(time.worksTime_openTime) ~ \(time.worksTime_closeTime) "
+                    }
+                    
+                    result += "\(w): \(resultTime) \n"
+                }
+                else {
+                    result += "\(w): 定休日 \n"
+                }
+            }
+        } else {
+            return "休業中"
+        }
+        return result
     }
     
     
@@ -182,5 +241,6 @@ struct FavoriteShops: Identifiable {
     let shop_address: String
     let shop_phoneNumber: String
     let genres: [Genres]
+    let works_times: [WorksTimes]
     var isFavorite: Bool
 }

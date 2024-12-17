@@ -15,6 +15,8 @@ struct Shops: Codable, Identifiable, Equatable {
     let shop_address: String
     let shop_phoneNumber: String
     let genres: [Genres]
+    let works_times: [WorksTimes]
+    
 }
 
 extension Shops {
@@ -29,7 +31,22 @@ extension Shops {
             genres: [
                 Genres(id: "1", genre_name: "和食"),
                 Genres(id: "2", genre_name: "ひつまぶし")
+            ],
+            works_times: [
+                WorksTimes(worksTime_week: "月", worksTime_openTime: "11:00", worksTime_closeTime: "15:00")
             ]
         )
+    ]
+}
+
+struct WorksTimes: Codable, Equatable {
+    let worksTime_week: String
+    let worksTime_openTime: String
+    let worksTime_closeTime: String
+}
+
+extension WorksTimes {
+    static var MOCK_WORKS: [WorksTimes] = [
+        .init(worksTime_week: "月", worksTime_openTime: "11:00", worksTime_closeTime: "12:00")
     ]
 }

@@ -137,8 +137,6 @@ struct ShopView: View {
                     
                     await svm.fetchFavoritesShops()
                     
-                    
-                    
                 }
             }
            

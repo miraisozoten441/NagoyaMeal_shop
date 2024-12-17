@@ -95,7 +95,8 @@ struct ShopMapCells: View {
                             
                             //営業状態
                             HStack{
-                                //                                    Text(openingTimes)
+                                Text("営業時間:")
+                                Text(svm.getTimes(times: shop.works_times))
                                 Spacer()
                             }
                             
@@ -187,9 +188,8 @@ struct ShopMapCells: View {
                             
                             //営業状態
                             HStack{
-                                
-//                                    .lineLimit(1)
-//                                Text(openingTimes)
+                                Text("営業時間:")
+                                Text(svm.getTimes(times: shop.works_times))
                                 Spacer()
                             }
                             

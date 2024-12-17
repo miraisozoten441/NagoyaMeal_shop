@@ -345,12 +345,6 @@ struct DetailTitle: View {
                         
                     }
                     
-                    //営業状態
-                    HStack{
-//                        Text(openingTimes)
-                        Spacer()
-                    }
-                    
                     //住所
                     HStack{
                         Text("住所:")
@@ -358,6 +352,21 @@ struct DetailTitle: View {
 
                         Spacer()
                     }
+                    
+                    //営業状態
+                    HStack{
+                        VStack{
+                            HStack{
+                                Text("営業時間:")
+                                Spacer()
+                            }
+                            
+                            Text(svm.getAllTimes(times: shop.works_times))
+                        }
+                        Spacer()
+                    }
+                    
+                    
                     
                     
                 }
