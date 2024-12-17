@@ -18,13 +18,10 @@ struct MapView: View {
     @StateObject var mapvm = MapViewModel()
     @State private var userCameraPosition: MapCameraPosition = .userLocation(followsHeading: true,
                                                                              fallback: .camera(MapCamera(centerCoordinate: .nagoyaStation,
-                                                                                                             distance: 5000,
-                                                                                                             pitch: 0)))
+                                                                                                         distance: 5000,
+                                                                                                         pitch: 0)))
     
     var body: some View {
-        
-        
-        
         Map(position: $userCameraPosition, interactionModes: .all) {
             UserAnnotation(anchor: .center)
             ForEach(mapvm.mapShops) { shop in
@@ -47,10 +44,19 @@ struct MapView: View {
         }
         .onAppear {
             mapvm.geocoding(shops: svm.shops)
-
+            
         }
         .onChange(of: svm.shops) {
             mapvm.geocoding(shops: svm.shops)
+        }
+        .onChange(of: svm.selectShop) {
+            if let checkshop = svm.selectShop{
+                Task{
+                    if let selectMapShop = await mapvm.selectGeocoding(shop: checkshop){
+                        userCameraPosition = .camera(MapCamera(centerCoordinate: CLLocationCoordinate2D(latitude: selectMapShop.lat - 0.005, longitude: selectMapShop.long), distance: 5000, pitch: 0))
+                    }
+                }
+            }
         }
     }
 }

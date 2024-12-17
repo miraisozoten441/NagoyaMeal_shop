@@ -233,7 +233,7 @@ class ShopViewModel: ObservableObject {
     
     
 }
-struct FavoriteShops: Identifiable {
+struct FavoriteShops: Identifiable, Equatable {
     let id: String
     let shop_name: String
     let shop_review: Float

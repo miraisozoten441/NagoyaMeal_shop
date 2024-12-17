@@ -27,6 +27,19 @@ class MapViewModel: ObservableObject {
         
     }
     
+    func selectGeocoding(shop: FavoriteShops) async -> MapShop? {
+        let address = shop.shop_address
+        let geocoder = CLGeocoder()
+        do {
+            let placemarks = try await geocoder.geocodeAddressString(address)
+            guard let lat = placemarks.first?.location?.coordinate.latitude,
+                  let long = placemarks.first?.location?.coordinate.longitude else { return nil}
+            return MapShop(id: shop.id, name: shop.shop_name, lat: lat, long: long)
+        } catch {
+            return nil
+        }
+    }
+    
 }
 
 struct MapShop: Codable, Identifiable {

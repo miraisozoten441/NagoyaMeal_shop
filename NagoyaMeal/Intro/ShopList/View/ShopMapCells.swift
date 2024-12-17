@@ -197,9 +197,10 @@ struct ShopMapCells: View {
                         .padding(.leading)
                         .foregroundStyle(Color(.label))
                         .padding(.vertical, 8)
+                        .contentShape(RoundedRectangle(cornerRadius: 0)) 
                         .onTapGesture {
                             svm.selectShop = shop
-                            isDetail = true
+                            //isDetail = true
                         }
                         
                         Rectangle()
