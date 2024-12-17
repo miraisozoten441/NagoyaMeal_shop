@@ -16,6 +16,7 @@ struct ShopMapCells: View {
     @State private var isDetail = false
     
     @Binding var isSheet: Bool
+    @Binding var isShopDetail: Bool
     @Binding var isOpen: Bool
     
     var body: some View {
@@ -105,8 +106,10 @@ struct ShopMapCells: View {
                         .foregroundStyle(Color(.label))
                         .padding(.vertical, 8)
                         .onTapGesture {
+//                            isSheet = false
+//                            isShopDetail = true
                             svm.selectShop = shop
-                            isDetail = true
+                            //isDetail = true
                         }
                         
                         Rectangle()
@@ -199,6 +202,8 @@ struct ShopMapCells: View {
                         .padding(.vertical, 8)
                         .contentShape(RoundedRectangle(cornerRadius: 0)) 
                         .onTapGesture {
+//                            isSheet = false
+//                            isShopDetail = true
                             svm.selectShop = shop
                             //isDetail = true
                         }

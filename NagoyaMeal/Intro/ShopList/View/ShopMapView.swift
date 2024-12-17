@@ -15,11 +15,13 @@ struct ShopMapView: View {
     let currentUser: String
     @Binding var isSheet: Bool
     @Binding var isOpen: Bool
+    @State var isShopDetail = false
     
+    @State var selectedMarker: MapShop?
     
     var body: some View {
         VStack {
-            MapView(gvm: gvm, svm: svm, currentUser: currentUser)
+            MapView(gvm: gvm, svm: svm, currentUser: currentUser , isSheet: $isSheet, isShopDetail: $isShopDetail, selectedMarker: $selectedMarker)
             
             Spacer()
             
@@ -37,7 +39,8 @@ struct ShopMapView: View {
         }.sheet(isPresented: $isSheet){
             VStack{
                 Text("")
-                ShopMapCells(gvm: gvm, svm: svm, currentUser: currentUser, isSheet: $isSheet, isOpen: $isOpen)
+                ShopMapCells(gvm: gvm, svm: svm, currentUser: currentUser, isSheet: $isSheet, isShopDetail: $isShopDetail, isOpen: $isOpen)
+                    .presentationBackground(.baseBg)
                 
             }
             .presentationDetents([
@@ -45,6 +48,24 @@ struct ShopMapView: View {
                 .fraction(0.4),
             ])
             .presentationBackgroundInteraction(.enabled)
+            .presentationDragIndicator(.hidden)
+            .presentationContentInteraction(.scrolls)
+        }
+        .sheet(isPresented: $isShopDetail, onDismiss: {
+//            isSheet = true
+            selectedMarker = nil
+        }){
+            VStack{
+                Text("")
+                DetailPageView(svm: svm, shop: svm.selectShop!, currentUser: currentUser)
+                    .presentationBackground(.baseBg)
+                    .presentationDragIndicator(.hidden)
+                    .presentationContentInteraction(.scrolls)
+            }
+            .presentationDetents([
+                .fraction(1),
+                .fraction(0.3),
+            ])
         }
         .onAppear{
             if let selectGenreId = gvm.getGenreId(){

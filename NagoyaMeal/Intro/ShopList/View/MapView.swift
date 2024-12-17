@@ -12,7 +12,8 @@ struct MapView: View {
     @ObservedObject var gvm: GenreViewModel
     @ObservedObject var svm: ShopViewModel
     let currentUser: String
-    
+    @Binding var isSheet: Bool
+    @Binding var isShopDetail: Bool
     
     @StateObject var locationManager = LocationManager()
     @StateObject var mapvm = MapViewModel()
@@ -20,9 +21,11 @@ struct MapView: View {
                                                                              fallback: .camera(MapCamera(centerCoordinate: .nagoyaStation,
                                                                                                          distance: 5000,
                                                                                                          pitch: 0)))
+    @Binding var selectedMarker: MapShop?
+    
     
     var body: some View {
-        Map(position: $userCameraPosition, interactionModes: .all) {
+        Map(position: $userCameraPosition, selection: $selectedMarker) {
             UserAnnotation(anchor: .center)
             ForEach(mapvm.mapShops) { shop in
                 Marker(coordinate: CLLocationCoordinate2D(latitude: shop.lat, longitude: shop.long)) {
@@ -30,9 +33,9 @@ struct MapView: View {
                     Image(systemName: "fork.knife")
                 }
                 .tint(Color.accent)
+                .tag(shop)
+                
             }
-            
-            
         }
         .task() {
             locationManager.requestLocationAuthorization()
@@ -53,10 +56,20 @@ struct MapView: View {
             if let checkshop = svm.selectShop{
                 Task{
                     if let selectMapShop = await mapvm.selectGeocoding(shop: checkshop){
-                        userCameraPosition = .camera(MapCamera(centerCoordinate: CLLocationCoordinate2D(latitude: selectMapShop.lat - 0.005, longitude: selectMapShop.long), distance: 5000, pitch: 0))
+                        userCameraPosition = .camera(MapCamera(centerCoordinate: CLLocationCoordinate2D(latitude: selectMapShop.lat - 0.003, longitude: selectMapShop.long), distance: 5000, pitch: 0))
                     }
                 }
             }
+        }
+        .onChange(of: selectedMarker){
+            
+            if let selectedMarker{
+                isSheet = false
+                svm.selectShop = svm.favoritesShops.first(where: { $0.id == selectedMarker.id })
+                isShopDetail = true
+            }
+            
+            
         }
     }
 }

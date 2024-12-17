@@ -96,6 +96,7 @@ struct ShopView: View {
         }){
             
             GenrePicker(genreLists: gvm.genres, gvm: gvm)
+                .presentationBackground(.baseBg)
                 .presentationDetents([
                     .fraction(0.4)
                 ])
@@ -120,6 +121,7 @@ struct ShopView: View {
 
         }){
             SortPicker(sortLists: sortLists, sort: $svm.selectSort)
+                .presentationBackground(.baseBg)
                 .presentationDetents([
                     .fraction(0.4)
                 ])

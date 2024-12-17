@@ -42,7 +42,7 @@ class MapViewModel: ObservableObject {
     
 }
 
-struct MapShop: Codable, Identifiable {
+struct MapShop: Codable, Identifiable, Hashable {
     let id: String
     let name: String
     let lat: Double
