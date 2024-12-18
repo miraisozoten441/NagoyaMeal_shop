@@ -33,6 +33,7 @@ struct GenreListView: View {
                     //                        }
                     //
                     //                    })
+                    Spacer().frame(height: 30)
                     LazyVGrid(columns: Array(repeating: GridItem(), count: 3), content: {
                         ForEach(gvm.genres.filter { $0.id != "0" }){ list in
                             
@@ -47,14 +48,9 @@ struct GenreListView: View {
                             )
                         }
                     })
-                }
-                
-                .padding(10)
-                
-                
-                
-                
-            }
+                    Spacer().frame(height: 200)
+                }.padding(10)
+            }.ignoresSafeArea(edges: Edge.Set.bottom)
         }
         
         

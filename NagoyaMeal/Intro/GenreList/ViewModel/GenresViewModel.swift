@@ -27,7 +27,7 @@ class GenreViewModel: ObservableObject {
         do {
             let data = try await api.getRequest()
             let decodedGenres = try JSONDecoder().decode([Genres].self, from: data)
-            //print("API Response: \(decodedGenres)")
+            print("API Response: \(decodedGenres)")
             await MainActor.run {
                 self.genres = decodedGenres
             }
