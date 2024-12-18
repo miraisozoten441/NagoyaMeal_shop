@@ -23,6 +23,8 @@ struct DetailPageView: View {
     @State private var isUserReview: Bool = false
     @State private var isUpdate = false
     
+    @State var isAlert: Bool = false
+    
     var body: some View {
         ZStack {
 
@@ -43,7 +45,16 @@ struct DetailPageView: View {
                         WordOfMouth(review: myReview, isCurrentUser: true)
                     } else {
                         Button("評価を入力"){
-                            isUserReview.toggle()
+                            if !currentUser.isEmpty {
+                                isUserReview.toggle()
+                            } else {
+                                isAlert.toggle()
+                            }
+                        }
+                        .alert("ログインをしてください", isPresented: $isAlert) {
+                            
+                        } message: {
+                            Text("評価機能を利用するにはログインを行なってください。")
                         }
                     }
                     
@@ -142,7 +153,7 @@ struct DetailPageView: View {
                             
                         }label: {
                             HStack{
-                                Text("報告")
+                                Text("")
                                     .font(.title3)
                                 Image(systemName: "exclamationmark.triangle.fill")
                             }

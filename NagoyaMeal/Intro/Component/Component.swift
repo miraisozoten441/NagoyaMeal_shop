@@ -271,6 +271,7 @@ struct DetailTitle: View {
     
     let shop: FavoriteShops
     let openingTimes: String = "24時間"
+    @State var isAlert: Bool = false
     
     @ObservedObject var svm: ShopViewModel
     
@@ -316,16 +317,20 @@ struct DetailTitle: View {
                             .padding(.horizontal)
                         } else {
                             Button{
-                                Task {
-                                    try await svm.createFavorites(shopId: shop.id, userId: currentUser) {data in
-                                        await MainActor.run {
-                                            
+                                if !currentUser.isEmpty {
+                                    Task {
+                                        try await svm.createFavorites(shopId: shop.id, userId: currentUser) {data in
+                                            await MainActor.run {
+                                                
+                                            }
                                         }
+                                        await svm.fetchFavorites(userId: currentUser)
+                                        await svm.fetchFavoritesShops()
+                                        svm.selectShop?.isFavorite = true
+                                        
                                     }
-                                    await svm.fetchFavorites(userId: currentUser)
-                                    await svm.fetchFavoritesShops()
-                                    svm.selectShop?.isFavorite = true
-                                    
+                                } else {
+                                    isAlert.toggle()
                                 }
                             } label: {
                                 Image(systemName: "heart")
@@ -333,6 +338,11 @@ struct DetailTitle: View {
                                     .foregroundStyle(.primary)
                             }
                             .padding(.horizontal)
+                            .alert("ログインをしてください", isPresented: $isAlert) {
+                                
+                            } message: {
+                                Text("お気に入り機能を利用するにはログインを行なってください。")
+                            }
                         }
                         
                     }

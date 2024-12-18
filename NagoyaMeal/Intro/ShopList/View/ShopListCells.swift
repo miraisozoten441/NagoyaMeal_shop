@@ -14,6 +14,7 @@ struct ShopListCells: View {
     let openingTimes: String = "24時間"
     @Binding var isOpen: Bool
     @State var day = ""
+    @State var isAlert: Bool = false
     
     
     var body: some View {
@@ -67,14 +68,18 @@ struct ShopListCells: View {
                                         .padding(.horizontal)
                                     } else {
                                         Button{
-                                            Task {
-                                                try await svm.createFavorites(shopId: shop.id, userId: currentUser) {data in
-                                                    await MainActor.run {
-                                                        
+                                            if !currentUser.isEmpty {
+                                                Task {
+                                                    try await svm.createFavorites(shopId: shop.id, userId: currentUser) {data in
+                                                        await MainActor.run {
+                                                            
+                                                        }
                                                     }
+                                                    await svm.fetchFavorites(userId: currentUser)
+                                                    await svm.fetchFavoritesShops()
                                                 }
-                                                await svm.fetchFavorites(userId: currentUser)
-                                                await svm.fetchFavoritesShops()
+                                            } else {
+                                                isAlert.toggle()
                                             }
                                         } label: {
                                             Image(systemName: "heart")
@@ -82,6 +87,11 @@ struct ShopListCells: View {
                                                 .foregroundStyle(.primary)
                                         }
                                         .padding(.horizontal)
+                                        .alert("ログインをしてください", isPresented: $isAlert) {
+                                            
+                                        } message: {
+                                            Text("お気に入り機能を利用するにはログインを行なってください。")
+                                        }
                                     }
                                     
                                     
@@ -162,14 +172,18 @@ struct ShopListCells: View {
                                         .padding(.horizontal)
                                     } else {
                                         Button{
-                                            Task {
-                                                try await svm.createFavorites(shopId: shop.id, userId: currentUser) {data in
-                                                    await MainActor.run {
-                                                        
+                                            if !currentUser.isEmpty {
+                                                Task {
+                                                    try await svm.createFavorites(shopId: shop.id, userId: currentUser) {data in
+                                                        await MainActor.run {
+                                                            
+                                                        }
                                                     }
+                                                    await svm.fetchFavorites(userId: currentUser)
+                                                    await svm.fetchFavoritesShops()
                                                 }
-                                                await svm.fetchFavorites(userId: currentUser)
-                                                await svm.fetchFavoritesShops()
+                                            } else {
+                                                isAlert.toggle()
                                             }
                                         } label: {
                                             Image(systemName: "heart")
@@ -177,6 +191,11 @@ struct ShopListCells: View {
                                                 .foregroundStyle(.primary)
                                         }
                                         .padding(.horizontal)
+                                        .alert("ログインをしてください", isPresented: $isAlert) {
+                                            
+                                        } message: {
+                                            Text("お気に入り機能を利用するにはログインを行なってください。")
+                                        }
                                     }
                                     
                                     
