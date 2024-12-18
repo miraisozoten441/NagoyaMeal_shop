@@ -102,11 +102,20 @@ struct DetailPageView: View {
             VStack(alignment: .leading){
                 //ユーザー
                 HStack{
-                    Image(systemName: "person.circle.fill")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .clipShape(Circle())
-                        .foregroundStyle(Color(.systemGray4))
+                    // ここの値はアプリ実装後に変更する
+                    AsyncImage(url: URL(string: CommonUrl.url + "api/systemuser/icon/000806.935b64c05d124123ae215f6382d03267.0438.jpeg")) { image in
+                        image.resizable()
+                            .frame(width: 40, height: 40)
+                            .clipShape(Circle())
+                            .foregroundStyle(Color(.systemGray4))
+                    } placeholder: {
+                        Image(systemName: "person.circle.fill")
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                            .clipShape(Circle())
+                            .foregroundStyle(Color(.systemGray4))
+                    }
+                                            
                     
                     Text(review.user_name)
                         .font(.subheadline)
